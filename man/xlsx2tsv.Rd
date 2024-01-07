@@ -4,12 +4,14 @@
 \alias{xlsx2tsv}
 \title{Convert XLSX (Excel) file to TSV}
 \usage{
-xlsx2tsv(file, outfile, ...)
+xlsx2tsv(file, outfile, sheet = 1, ...)
 }
 \arguments{
 \item{file}{An Excel file name}
 
 \item{outfile}{A tab-separated (.tsv) file name}
+
+\item{sheet}{The name or index of the Excel sheet to read data from.}
 
 \item{...}{Pass additional params to write_tsv}
 }
