@@ -4,14 +4,20 @@
 \alias{xlsx2tsv}
 \title{Convert XLSX (Excel) file to TSV}
 \usage{
-xlsx2tsv(file, outfile, sheet = 1, ...)
+xlsx2tsv(file, outfile, sheet = 1, sep.names = " ", detectDates = FALSE, ...)
 }
 \arguments{
 \item{file}{An Excel file name}
 
 \item{outfile}{A tab-separated (.tsv) file name}
 
-\item{sheet}{The name or index of the Excel sheet to read data from.}
+\item{sheet}{The name or index of the Excel sheet to read data from. See
+openxlsx docs.}
+
+\item{sep.names}{One character which substitutes blanks in column names.
+See openxlsx docs.}
+
+\item{detectDates}{Attempt to recognize dates. See openxlsx docs.}
 
 \item{...}{Pass additional params to write_tsv}
 }
@@ -19,7 +25,14 @@ xlsx2tsv(file, outfile, sheet = 1, ...)
 Nothing
 }
 \description{
-Read XLSX file and output it as a TSv file
+Read XLSX file (with openxlsx::read.xlsx) and output it as a TSV
+file (with readr::write_tsv)
+}
+\details{
+sep.names - read.xlsx by default will convert spaces in column
+names to periods. To avoid this, the param 'sep.names' is defaulted to a
+space character " ". However, this collapses 2 or more spaces in the column
+name to one space. Set it to "." if you want the default read.xlsx behavior.
 }
 \examples{
 \dontrun{
