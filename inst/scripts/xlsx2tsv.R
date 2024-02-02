@@ -14,7 +14,9 @@ if (is.na(sheet)) {
   }
 }
 
-xlsx2tsv(file, outfile, sheet = sheet)
+# param na = "" means that 1) for empty fields and 2) for <NA> values in R,
+# it writes the empty string ""
+xlsx2tsv(file, outfile, sheet = sheet, na = "")
 
 
 cat("\n\n")
