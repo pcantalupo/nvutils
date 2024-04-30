@@ -4,12 +4,17 @@
 \alias{tsv2xlsx}
 \title{Convert TSV file to XLSX (Excel)}
 \usage{
-tsv2xlsx(file, outfile)
+tsv2xlsx(file, outfile, show_col_types = NULL, guess_max = 1000)
 }
 \arguments{
 \item{file}{A tab-separated (.tsv) file (with header row)}
 
 \item{outfile}{Excel file name}
+
+\item{show_col_types}{See ?readr::read_tsv}
+
+\item{guess_max}{See ?readr::read_tsv. Set to 'Inf' to use all rows to
+determine column type.}
 }
 \value{
 Nothing
