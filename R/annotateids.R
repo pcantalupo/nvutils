@@ -54,16 +54,28 @@ annotateids = function(db, ids, idtype, columns, keep = FALSE, allowable = FALSE
     if (missing(idtype)) stop("The 'idtype' parameter must be supplied [i.e. c('SYMBOL')].")
     if (missing(columns)) stop("The 'columns' parameter must be supplied [i.e. c('GENENAME')].")
 
-    # Need to remove duplicates manually with 'match'
+    # Query the database
     res = AnnotationDbi::select(db, keys = ids, keytype = idtype, columns = columns)
+
+    # Create data.frame with all input IDs
+    all_ids = data.frame(id = ids)
+    names(all_ids)[1] = idtype
+
+    # Merge results with the input IDs which will keep all matches
+    res = merge(all_ids, res, by = idtype, all.x = TRUE)
+
     if (keep) {
       message("\nCareful: there might be multiple rows for each id since you chose 'keep' == TRUE")
+      # Sort the result to maintain the original order of the ids
+      res = res[order(match(res[, idtype], ids)), ]
     } else {
       message("\nReturning a unique row for each id")
-      res = res[match(ids, res[, idtype]),] # get the first match for each id
+      # Keep only the first match for each id
+      res = res[match(ids, res[, idtype]),]
     }
 
     # 'res' is a data.frame. 1st column is the idtype (i.e. SYMBOL) and then N columns to match the 'column' param (i.e. ENSEMBL, etc...)
+    rownames(res) = NULL
     return(res)
   }
 }
