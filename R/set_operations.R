@@ -32,17 +32,17 @@ set_operations = function (x, category_names = NULL, max_show = 10,
     stop("set_operations() requires a list of length 2")
   }
 
-  # Assign default or provided names to 'x' if 'x' doesn't have names
-  if (is.null(names(x))) {
-    if (is.null(category_names)) {
-      category_names = c("set1", "set2")
-      names(x) <- category_names
-    } else {
-      if (length(category_names) != 2) {
-        stop("category_names must be a vector of length 2.")
-      }
-      names(x) <- category_names
+  # Use the names of list 'x' if they exist, or use category_names or default names
+  if (!is.null(names(x))) {
+    category_names = names(x)
+  } else if (is.null(category_names)) {
+    category_names = c("set1", "set2")
+    names(x) <- category_names
+  } else {
+    if (length(category_names) != 2) {
+      stop("category_names must be a vector of length 2.")
     }
+    names(x) <- category_names
   }
 
   # Calculate set operations

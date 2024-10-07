@@ -15,6 +15,17 @@ test_that("set_operations returns correct set operations", {
   expect_equal(result$setdiff_set2_vs_set1, c(6, 7, 8))
 })
 
+test_that("set_operations handles named lists appropriately", {
+  set1 <- 1:5
+  set2 <- 4:8
+  result <- set_operations(list(first = set1, second = set2))
+
+  expect_equal(result$len_first, 5)
+  expect_equal(result$len_second, 5)
+  expect_equal(result$setdiff_first_vs_second, c(1, 2, 3))
+  expect_equal(result$setdiff_second_vs_first, c(6, 7, 8))
+})
+
 test_that("set_operations max_show parameter works correctly", {
   set1 <- 1:10
   set2 <- 6:15
