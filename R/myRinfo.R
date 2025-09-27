@@ -22,7 +22,7 @@
 #' }
 #'
 #' @export
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' # Display R environment info with default local library path
@@ -33,23 +33,27 @@
 #' }
 #'
 myRinfo <- function(local_lib = "~/projects/Seurat/packages") {
-  
-  message("\nIs Bioconductor valid?")
-  print(suppressMessages(BiocManager::valid()))
-  
-  message("\nBioconductor version:")
-  print(BiocManager::version())
-  
+
+  if (requireNamespace("BiocManager", quietly = TRUE)) {
+    message("\nIs Bioconductor valid?")
+    print(suppressMessages(BiocManager::valid()))
+
+    message("\nBioconductor version:")
+    print(BiocManager::version())
+  } else {
+    message("\nBiocManager not available - skipping Bioconductor checks")
+  }
+
   message("\nLibrary paths .libPaths():")
   print(.libPaths())
-  
+
   message("\nSeurat version in .libpaths():")
   if (requireNamespace("Seurat", quietly = TRUE)) {
     print(utils::packageVersion('Seurat'))
   } else {
     print("Seurat not found in library paths")
   }
-  
+
   message("\nChecking for Seurat in local library: ", local_lib)
   if (dir.exists(local_lib)) {
     tryCatch({
@@ -61,12 +65,12 @@ myRinfo <- function(local_lib = "~/projects/Seurat/packages") {
   } else {
     print(paste0("Local library ", local_lib, " does not exist"))
   }
-  
+
   message("\nVersion of select packages")
   check_version_packages()
-  
+
   message("\nR version:")
   print(R.version.string)
-  
+
   invisible(NULL)
 }
