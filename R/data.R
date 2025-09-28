@@ -20,3 +20,29 @@
 #' @references Segerstolpe A et al. (2016). Single-cell transcriptome profiling of
 #' human pancreatic islets in health and type 2 diabetes. Cell Metab. 24(4), 593-607.
 "sctdata"
+
+
+#' Polychrome color palette (visual impact over colorblind accessibility)
+#'
+#' Philosophy: Maximizes perceptual distance between colors using algorithmic methods
+#' Uses computational optimization to create colors as visually distinct as possible
+#' Prioritizes visual impact and distinctness over colorblind accessibility
+#' Best for when you need maximum color separation
+#'
+#' @format A character vector of 25 hex color codes
+#' @source Created with Polychrome::createPalette(25, c("#FF0000", "#00FF00", "#0000FF"), range = c(30, 80))
+"colors_polychrome"
+
+#' dittoSeq/Okabe-Ito (colorblind safe)
+#'
+#' Philosophy: Accessibility-first design optimized for scientific visualization
+#' Based on Okabe-Ito colorblind-safe palette with systematic brightness variations
+#' Specifically designed to be distinguishable by people with common colorblindness
+#' Optimized for complex multi-group genomics visualizations
+#' Best for scientific publications and colorblind-accessible visualizations
+#'
+#' @format A character vector of 40 hex color codes
+#' @source \url{https://github.com/dtm2451/dittoSeq/}
+"colors_ditto"
+
+
