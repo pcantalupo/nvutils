@@ -14,9 +14,14 @@ Created with Polychrome::createPalette(25, c("#FF0000", "#00FF00", "#0000FF"), r
 colors_polychrome
 }
 \description{
-Philosophy: Maximizes perceptual distance between colors using algorithmic methods
-Uses computational optimization to create colors as visually distinct as possible
-Prioritizes visual impact and distinctness over colorblind accessibility
-Best for when you need maximum color separation
+Philosophy: Maximizes perceptual distance between colors using algorithmic methods.
+\itemize{
+  \item Uses computational optimization to create colors as visually distinct as possible
+  \item Starts from RGB primaries and creates maximum separation in color space
+  \item Prioritizes visual impact and distinctness over colorblind accessibility
+  \item More saturated/vibrant colors for high visual contrast
+  \item Generated algorithmically rather than hand-curated
+  \item Best for: When you need maximum color separation and colorblind accessibility is not primary concern
+}
 }
 \keyword{datasets}

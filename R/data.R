@@ -21,13 +21,17 @@
 #' human pancreatic islets in health and type 2 diabetes. Cell Metab. 24(4), 593-607.
 "sctdata"
 
-
 #' Polychrome color palette (visual impact over colorblind accessibility)
 #'
-#' Philosophy: Maximizes perceptual distance between colors using algorithmic methods
-#' Uses computational optimization to create colors as visually distinct as possible
-#' Prioritizes visual impact and distinctness over colorblind accessibility
-#' Best for when you need maximum color separation
+#' Philosophy: Maximizes perceptual distance between colors using algorithmic methods.
+#' \itemize{
+#'   \item Uses computational optimization to create colors as visually distinct as possible
+#'   \item Starts from RGB primaries and creates maximum separation in color space
+#'   \item Prioritizes visual impact and distinctness over colorblind accessibility
+#'   \item More saturated/vibrant colors for high visual contrast
+#'   \item Generated algorithmically rather than hand-curated
+#'   \item Best for: When you need maximum color separation and colorblind accessibility is not primary concern
+#' }
 #'
 #' @format A character vector of 25 hex color codes
 #' @source Created with Polychrome::createPalette(25, c("#FF0000", "#00FF00", "#0000FF"), range = c(30, 80))
@@ -35,14 +39,21 @@
 
 #' dittoSeq/Okabe-Ito (colorblind safe)
 #'
-#' Philosophy: Accessibility-first design optimized for scientific visualization
-#' Based on Okabe-Ito colorblind-safe palette with systematic brightness variations
-#' Specifically designed to be distinguishable by people with common colorblindness
-#' Optimized for complex multi-group genomics visualizations
-#' Best for scientific publications and colorblind-accessible visualizations
+#' Philosophy: Accessibility-first design optimized for scientific visualization.
+#' \itemize{
+#'   \item Based on Okabe-Ito colorblind-safe palette (first 8 colors)
+#'   \item Specifically designed to be distinguishable by people with common colorblindness
+#'   \item Extends base 8 colors through systematic brightness variations (-40%, -25%, +25%, +40%)
+#'   \item Perceptually balanced colors with similar visual weights
+#'   \item Maintains accessibility properties across all brightness levels
+#'   \item Professional, publication-ready appearance suitable for scientific contexts
+#'   \item Optimized for complex multi-group genomics visualizations (e.g., 20+ cell types)
+#'   \item Prioritizes inclusivity and clarity over visual impact
+#'   \item Best for: Scientific publications, collaborative research, colorblind-accessible visualizations
+#' }
 #'
 #' @format A character vector of 40 hex color codes
-#' @source \url{https://github.com/dtm2451/dittoSeq/}
+#' @source \url{https://github.com/dtm2451/dittoSeq/blob/v0.3/R/dittoColors.R#L57-L67}
 "colors_ditto"
 
 

@@ -8,16 +8,23 @@
 A character vector of 40 hex color codes
 }
 \source{
-\url{https://github.com/dtm2451/dittoSeq/}
+\url{https://github.com/dtm2451/dittoSeq/blob/v0.3/R/dittoColors.R#L57-L67}
 }
 \usage{
 colors_ditto
 }
 \description{
-Philosophy: Accessibility-first design optimized for scientific visualization
-Based on Okabe-Ito colorblind-safe palette with systematic brightness variations
-Specifically designed to be distinguishable by people with common colorblindness
-Optimized for complex multi-group genomics visualizations
-Best for scientific publications and colorblind-accessible visualizations
+Philosophy: Accessibility-first design optimized for scientific visualization.
+\itemize{
+  \item Based on Okabe-Ito colorblind-safe palette (first 8 colors)
+  \item Specifically designed to be distinguishable by people with common colorblindness
+  \item Extends base 8 colors through systematic brightness variations (-40%, -25%, +25%, +40%)
+  \item Perceptually balanced colors with similar visual weights
+  \item Maintains accessibility properties across all brightness levels
+  \item Professional, publication-ready appearance suitable for scientific contexts
+  \item Optimized for complex multi-group genomics visualizations (e.g., 20+ cell types)
+  \item Prioritizes inclusivity and clarity over visual impact
+  \item Best for: Scientific publications, collaborative research, colorblind-accessible visualizations
+}
 }
 \keyword{datasets}
