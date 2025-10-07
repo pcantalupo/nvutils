@@ -14,6 +14,7 @@ Imports:
     dplyr,
     methods,
     openxlsx,
+    orthogene,
     readr,
     waldo
 Suggests: 
