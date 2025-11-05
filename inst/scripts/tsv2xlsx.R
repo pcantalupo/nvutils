@@ -1,25 +1,26 @@
 #!/usr/bin/env Rscript
 pacman::p_load('nvutils')
 
+# Arguments
 args = commandArgs(trailingOnly = TRUE)
-file = args[1]
-outfile = args[2]
-guess_max = args[3]
-show_col_types = args[4]
+file = args[1]      # file = "example_tsv.tsv"
+outfile = args[2]   # outfile = "foo.xlsx"
+verbose = args[3]     # verbose = TRUE
 
-if (is.na(guess_max)) {
-  guess_max = 1000        # same default as readr:read_tsv
-} else if (guess_max == "Inf") {
-  guess_max = Inf
-} else { guess_max = as.integer(guess_max) }
+# Argument validation
+stopifnot(file.exists(file))
+if (is.na(outfile)) {
+  outfile = paste0(tools::file_path_sans_ext(file), ".xlsx")
+}
+if (is.na(verbose)) { verbose = FALSE }
 
-if (is.na(show_col_types)) {
-  show_col_types = NULL   # same default as readr::read_tsv
+
+# Convert TSV to XLSX
+tsv2xlsx(file, outfile, colClasses = "character", na.strings = NULL)
+
+
+if (verbose == TRUE) {
+  cat("\n\n")
+  devtools::session_info()
 }
 
-
-tsv2xlsx(file, outfile, guess_max = guess_max, show_col_types = show_col_types)
-
-
-cat("\n\n")
-devtools::session_info()

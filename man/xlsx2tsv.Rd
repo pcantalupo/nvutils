@@ -19,20 +19,27 @@ See openxlsx docs.}
 
 \item{detectDates}{Attempt to recognize dates. See openxlsx docs.}
 
-\item{...}{Pass additional params to write_tsv}
+\item{...}{Pass additional params to fwrite}
 }
 \value{
-Nothing
+Invisible NULL
 }
 \description{
 Read XLSX file (with openxlsx::read.xlsx) and output it as a TSV
-file (with readr::write_tsv)
+file (with data.table::fwrite)
 }
 \details{
 sep.names - read.xlsx by default will convert spaces in column
 names to periods. To avoid this, the param 'sep.names' is defaulted to a
 space character " ". However, this collapses 2 or more spaces in the column
 name to one space. Set it to "." if you want the default read.xlsx behavior.
+
+NA handling: Excel is read with with na.strings = character(0), so no string
+tokens are converted to missing on import. Literal "NA" in Excel is preserved as the
+two-character string "NA". Blank Excel cells are written out as blank fields via
+fwrite(na = ""). If you want "NA" strings to be treated as missing instead, call
+read.xlsx with na.strings = "NA". If you want missing values written as the token NA
+instead of a blank field, call fwrite with na = "NA".
 }
 \examples{
 \dontrun{

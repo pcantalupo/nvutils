@@ -4,26 +4,51 @@
 \alias{tsv2xlsx}
 \title{Convert TSV file to XLSX (Excel)}
 \usage{
-tsv2xlsx(file, outfile, show_col_types = NULL, guess_max = 1000)
+tsv2xlsx(
+  file,
+  outfile,
+  colClasses = "character",
+  na.strings = NULL,
+  show_col_types = NULL,
+  guess_max = NULL,
+  ...
+)
 }
 \arguments{
-\item{file}{A tab-separated (.tsv) file (with header row)}
+\item{file}{Path to a tab-separated (.tsv) file with a header row.}
 
-\item{outfile}{Excel file name}
+\item{outfile}{Output Excel file path.}
 
-\item{show_col_types}{See ?readr::read_tsv}
+\item{colClasses}{Character vector or "character" to force all columns to character. Use NULL to allow type guessing. See data.table::fread.}
 
-\item{guess_max}{See ?readr::read_tsv. Set to 'Inf' to use all rows to
-determine column type.}
+\item{na.strings}{Character vector of strings to interpret as missing; use NULL to disable NA conversion and keep empty fields as "" and the literal "NA" as "NA".}
+
+\item{show_col_types}{Deprecated. No longer used.}
+
+\item{guess_max}{Deprecated. Use colClasses instead.}
+
+\item{...}{Additional arguments passed to data.table::fread.}
 }
 \value{
-Nothing
+Invisible NULL. Called for its side effect of writing an XLSX file.
 }
 \description{
-Read TSV file and output it as an XLSX file
+Read a tab-separated file with data.table::fread and write it to an XLSX with openxlsx::write.xlsx.
+}
+\details{
+Default colClasses = "character" prevents type guessing and preserves the file contents as text, including leading zeros. With na.strings = NULL, empty fields remain "" and "NA" remains the 2-character string, which will appear as blank cells and "NA" text in Excel, respectively.
+
+If you want fread to infer types, set colClasses = NULL. If you want certain tokens treated as missing, set na.strings accordingly.
 }
 \examples{
 \dontrun{
+# Preserve empty strings and the literal "NA" as text
 tsv2xlsx("foo.tsv", "foo.xlsx")
+
+# Allow type guessing
+tsv2xlsx("foo.tsv", "foo.xlsx", colClasses = NULL)
+
+# Treat "NA" and "" as missing
+tsv2xlsx("foo.tsv", "foo.xlsx", colClasses = NULL, na.strings = c("NA", ""))
 }
 }
