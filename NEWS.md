@@ -1,3 +1,10 @@
+# nvutils 1.0.1
+
+* Fixed `two_category_barplot()` failing with "could not find function
+  '%>%'" by importing the pipe operator from dplyr.
+* Corrected the `two_category_barplot()` README example to use the base
+  `mtcars` dataset so it runs without attaching ggplot2.
+
 # nvutils 1.0.0
 
 Initial release. A collection of R utility functions.
