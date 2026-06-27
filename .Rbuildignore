@@ -3,3 +3,5 @@
 ^LICENSE\.md$
 ^\.DS_Store$
 ^data-raw$
+^\.claude$
+^local$

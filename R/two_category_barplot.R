@@ -23,7 +23,7 @@
 #' the dittoSeq color palette, which is designed for accessibility and
 #' consistency with single-cell visualization tools.
 #'
-#' @importFrom dplyr mutate
+#' @importFrom dplyr mutate %>%
 #' @importFrom ggplot2 ggplot aes geom_bar position_fill scale_fill_manual
 #'   scale_y_continuous labs theme_classic theme element_text
 #' @importFrom rlang .data :=
