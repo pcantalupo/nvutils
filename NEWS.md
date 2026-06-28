@@ -1,3 +1,10 @@
+# nvutils 1.0.2
+
+* Added `inst/scripts/two_category_barplot.R`, a command-line wrapper around
+  `two_category_barplot()`. Reads `.tsv`/`.txt`/`.xlsx` input and saves a PNG,
+  with options for title, legend title, theme, x-label rotation, sheet, and
+  output size/resolution.
+
 # nvutils 1.0.1
 
 * Fixed `two_category_barplot()` failing with "could not find function
