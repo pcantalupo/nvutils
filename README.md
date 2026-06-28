@@ -47,6 +47,23 @@ two_category_barplot(mtcars,
 Arguments: `data` (data frame), `category` (x-axis column), `subcategory`
 (fill column), `title`, and `legend_title`. Returns a ggplot2 object.
 
+### Command-line usage
+
+`inst/scripts/two_category_barplot.R` wraps the function as a CLI tool that
+reads a tabular file (`.tsv`, `.txt`, or `.xlsx`, auto-detected by extension)
+and saves a PNG.
+
+``` sh
+two_category_barplot.R -i data.tsv -c cyl -s gear -o plot.png
+```
+
+Required flags: `-i/--input`, `-c/--category`, `-s/--subcategory`. Optional
+flags: `-o/--output` (defaults to the input basename + `.png`), `-t/--title`,
+`-l/--legend-title`, `--theme` (ggplot2 theme; `grey` is the ggplot2 default,
+script default is `classic`), `--rotatex_angle` (x-label rotation, default 45),
+`--sheet` (xlsx sheet, default 1), `--width`/`--height` (inches, default 7x7),
+and `--dpi` (default 300).
+
 This is a general-purpose extraction of the `get_barplots_and_tables()`
 function in [sctools](https://github.com/pcantalupo/sctools). The sctools
 version is single-cell oriented (reads a Seurat/SCE object) and produces a
