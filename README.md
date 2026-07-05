@@ -44,8 +44,22 @@ two_category_barplot(mtcars,
                      legend_title = "Gears")
 ```
 
+![](man/figures/README-two-category-title.png)
+
+``` r
+## with a different palette (defaults to colors_ditto)
+two_category_barplot(mtcars,
+                     category = "cyl",
+                     subcategory = "gear",
+                     colors = colors_polychrome)
+```
+
+![](man/figures/README-two-category-polychrome.png)
+
 Arguments: `data` (data frame), `category` (x-axis column), `subcategory`
-(fill column), `title`, and `legend_title`. Returns a ggplot2 object.
+(fill column), `title`, `legend_title`, and `colors` (fill palette, defaults
+to the exported `colors_ditto`; pass any color vector, e.g. `colors_polychrome`).
+Returns a ggplot2 object.
 
 ### Command-line usage
 
@@ -55,14 +69,18 @@ and saves a PNG.
 
 ``` sh
 two_category_barplot.R -i data.tsv -c cyl -s gear -o plot.png
+
+## with the polychrome palette and a custom title
+two_category_barplot.R -i data.tsv -c cyl -s gear -o plot.png \
+  --colors polychrome -t "Gear Distribution by Cylinder Count"
 ```
 
 Required flags: `-i/--input`, `-c/--category`, `-s/--subcategory`. Optional
 flags: `-o/--output` (defaults to the input basename + `.png`), `-t/--title`,
-`-l/--legend-title`, `--theme` (ggplot2 theme; `grey` is the ggplot2 default,
-script default is `classic`), `--rotatex_angle` (x-label rotation, default 45),
-`--sheet` (xlsx sheet, default 1), `--width`/`--height` (inches, default 7x7),
-and `--dpi` (default 300).
+`-l/--legend-title`, `--colors` (`ditto` (default) or `polychrome`), `--theme`
+(ggplot2 theme; `grey` is the ggplot2 default, script default is `classic`),
+`--rotatex_angle` (x-label rotation, default 45), `--sheet` (xlsx sheet, default
+1), `--width`/`--height` (inches, default 7x7), and `--dpi` (default 300).
 
 This is a general-purpose extraction of the `get_barplots_and_tables()`
 function in [sctools](https://github.com/pcantalupo/sctools). The sctools

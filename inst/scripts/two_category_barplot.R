@@ -18,6 +18,9 @@ option_list <- list(
               help = "Plot title [default: %default]"),
   make_option(c("-l", "--legend-title"), type = "character", default = NULL,
               help = "Legend title [default: subcategory name]"),
+  make_option("--colors", type = "character", default = "ditto",
+              help = paste("Fill palette: ditto (colorblind-safe) or polychrome",
+                           "(maximum visual separation) [default: %default]")),
   make_option("--theme", type = "character", default = "classic",
               help = paste("Base ggplot2 theme: grey (the ggplot2 default), gray,",
                            "bw, classic, minimal, light, dark, linedraw, void",
@@ -51,9 +54,19 @@ if (!opt$theme %in% valid_themes) {
   stop("unknown theme '", opt$theme, "'; choose one of: ",
        paste(valid_themes, collapse = ", "))
 }
+valid_palettes <- c("ditto", "polychrome")
+if (!opt$colors %in% valid_palettes) {
+  stop("unknown palette '", opt$colors, "'; choose one of: ",
+       paste(valid_palettes, collapse = ", "))
+}
 
 # Load the heavy package only after args validate
 pacman::p_load('nvutils')
+
+# Resolve the palette name to the exported color vector
+palette <- switch(opt$colors,
+                  ditto = colors_ditto,
+                  polychrome = colors_polychrome)
 
 # Read input by extension
 ext <- tolower(tools::file_ext(opt$input))
@@ -76,7 +89,8 @@ p <- two_category_barplot(data,
                           category = opt$category,
                           subcategory = opt$subcategory,
                           title = opt$title,
-                          legend_title = opt[["legend-title"]])
+                          legend_title = opt[["legend-title"]],
+                          colors = palette)
 
 # Apply base theme (when not classic) and x-label rotation. A complete theme
 # replaces everything before it, so re-apply the rotation afterwards. The

@@ -9,7 +9,8 @@ two_category_barplot(
   category,
   subcategory,
   title = "Percent stacked barchart",
-  legend_title = NULL
+  legend_title = NULL,
+  colors = colors_ditto
 )
 }
 \arguments{
@@ -26,6 +27,11 @@ subcategory (fill variable). Will be converted to a factor if not already.}
 
 \item{legend_title}{Character string for the legend title. If NULL (default),
 uses the subcategory variable name.}
+
+\item{colors}{A character vector of hex color codes for the fill scale.
+Defaults to \code{colors_ditto}, the exported 40-color dittoSeq/Okabe-Ito
+palette. The palette is recycled three times to provide headroom for many
+subcategory levels. Any color vector works, e.g. \code{colors_polychrome}.}
 }
 \value{
 A ggplot2 object representing the stacked bar chart
@@ -58,6 +64,12 @@ two_category_barplot(mpg,
                      subcategory = "manufacturer",
                      title = "Manufacturer Distribution by Year",
                      legend_title = "Manufacturer")
+
+# With a different palette
+two_category_barplot(mpg,
+                     category = "manufacturer",
+                     subcategory = "class",
+                     colors = colors_polychrome)
 
 # Cell type composition across samples (single-cell example)
 \dontrun{

@@ -13,6 +13,10 @@
 #'   "Percent stacked barchart".
 #' @param legend_title Character string for the legend title. If NULL (default),
 #'   uses the subcategory variable name.
+#' @param colors A character vector of hex color codes for the fill scale.
+#'   Defaults to \code{colors_ditto}, the exported 40-color dittoSeq/Okabe-Ito
+#'   palette. The palette is recycled three times to provide headroom for many
+#'   subcategory levels. Any color vector works, e.g. \code{colors_polychrome}.
 #'
 #' @return A ggplot2 object representing the stacked bar chart
 #'
@@ -48,6 +52,12 @@
 #'                      title = "Manufacturer Distribution by Year",
 #'                      legend_title = "Manufacturer")
 #'
+#' # With a different palette
+#' two_category_barplot(mpg,
+#'                      category = "manufacturer",
+#'                      subcategory = "class",
+#'                      colors = colors_polychrome)
+#'
 #' # Cell type composition across samples (single-cell example)
 #' \dontrun{
 #' # Assuming seurat_obj is a Seurat object with metadata
@@ -60,7 +70,8 @@
 #' }
 two_category_barplot <- function(data, category, subcategory,
                                  title = "Percent stacked barchart",
-                                 legend_title = NULL) {
+                                 legend_title = NULL,
+                                 colors = colors_ditto) {
   # Input validation
   if (!category %in% names(data)) stop("category not found in data")
   if (!subcategory %in% names(data)) stop("subcategory not found in data")
@@ -70,22 +81,13 @@ two_category_barplot <- function(data, category, subcategory,
     mutate({{category}} := factor(.data[[category]]),
            {{subcategory}} := factor(.data[[subcategory]]))
 
-  dittocolors <- rep(
-    c("#E69F00", "#56B4E9", "#009E73", "#F0E442",
-      "#0072B2", "#D55E00", "#CC79A7", "#666666",
-      "#AD7700", "#1C91D4", "#007756", "#D5C711",
-      "#005685", "#A04700", "#B14380", "#4D4D4D",
-      "#FFBE2D", "#80C7EF", "#00F6B3", "#F4EB71",
-      "#06A5FF", "#FF8320", "#D99BBD", "#8C8C8C",
-      "#FFCB57", "#9AD2F2", "#2CFFC6", "#F6EF8E",
-      "#38B7FF", "#FF9B4D", "#E0AFCA", "#A3A3A3",
-      "#8A5F00", "#1674A9", "#005F45", "#AA9F0D",
-      "#00446B", "#803800", "#8D3666", "#3D3D3D"), 3)
+  # Recycle the palette to provide headroom for many subcategory levels
+  palette <- rep(colors, 3)
 
   p <- data %>%
     ggplot(aes(x = .data[[category]], fill = .data[[subcategory]])) +
     geom_bar(position = position_fill(reverse = FALSE)) +
-    scale_fill_manual(values = dittocolors, name = legend_title) +
+    scale_fill_manual(values = palette, name = legend_title) +
     scale_y_continuous(labels = scales::percent_format()) +
     labs(title = title, y = "Proportion (%)", x = category) +
     theme_classic() +
