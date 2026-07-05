@@ -1,7 +1,7 @@
 Package: nvutils
 Type: Package
 Title: Sundry Utility Functions
-Version: 1.0.2
+Version: 1.0.3
 Author: Paul Cantalupo
 Maintainer: Paul Cantalupo <pcantalupo@gmail.com>
 Description: A set of utility functions.

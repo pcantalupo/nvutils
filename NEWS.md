@@ -1,3 +1,11 @@
+# nvutils 1.0.3
+
+* `two_category_barplot()` now takes a `colors` argument (defaulting to the
+  exported `colors_ditto` palette) instead of an inlined color vector, so any
+  palette such as `colors_polychrome` can be supplied. The CLI wrapper exposes
+  this via `--colors` (`ditto` or `polychrome`). README documents both with
+  example figures.
+
 # nvutils 1.0.2
 
 * Added `inst/scripts/two_category_barplot.R`, a command-line wrapper around
