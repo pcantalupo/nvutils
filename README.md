@@ -44,7 +44,7 @@ two_category_barplot(mtcars,
                      legend_title = "Gears")
 ```
 
-![](man/figures/README-two-category-title.png)
+<img src="man/figures/README-two-category-title.png" width="480" />
 
 ``` r
 ## with a different palette (defaults to colors_ditto)
@@ -54,7 +54,7 @@ two_category_barplot(mtcars,
                      colors = colors_polychrome)
 ```
 
-![](man/figures/README-two-category-polychrome.png)
+<img src="man/figures/README-two-category-polychrome.png" width="480" />
 
 Arguments: `data` (data frame), `category` (x-axis column), `subcategory`
 (fill column), `title`, `legend_title`, and `colors` (fill palette, defaults
