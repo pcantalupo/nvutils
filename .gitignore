@@ -7,4 +7,5 @@ docs
 .httr-oauth
 .DS_Store
 .quarto
+.claude
 local
