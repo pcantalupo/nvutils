@@ -24,6 +24,49 @@ library(nvutils)
 xlsx2tsv(xlsxfile, tsvoutfile)
 ```
 
+## Nicely-formatted Excel output
+
+`write_xlsx_pretty()` writes a single data frame to an XLSX with `openxlsx`,
+fixing the default formatting: left/top cell alignment, auto column widths,
+character columns forced to text format (so values like `001` keep their
+leading zeros), dates shown as `YYYY-MM-DD`, an initial worksheet zoom, and a
+large default window size.
+
+``` r
+library(nvutils)
+write_xlsx_pretty(mtcars, "mtcars.xlsx", rownames_col = "model")
+
+## a column mixing numeric percentages with text: 0.9 is written as the number
+## 90% while "<90%" stays as text
+df <- data.frame(id = 1:2, Chemo_Response = c("0.9", "<90%"))
+write_xlsx_pretty(df, "response.xlsx", pct_cols = "Chemo_Response")
+```
+
+Arguments: `df`, `path`, `sheet` (worksheet name), `zoom`, `rownames_col`
+(move row names into a first column), `window_width`, `window_height`, and
+`pct_cols` (columns mixing numeric percentages with free text). Returns
+invisible `NULL`; called for the side effect of writing the file.
+
+### Command-line usage
+
+`inst/scripts/write_xlsx_pretty.R` wraps the function as a CLI tool that reads
+a tabular file (`.tsv`, `.txt`, or `.xlsx`, auto-detected by extension) and
+writes a prettified `.xlsx`.
+
+``` sh
+## TSV in, prettified xlsx out (defaults to in_pretty.xlsx)
+write_xlsx_pretty.R -i data.tsv --pct_cols Chemo_Response
+
+## xlsx in, explicit output
+write_xlsx_pretty.R -i data.xlsx -o data_pretty.xlsx
+```
+
+Required flag: `-i/--input`. Optional flags: `-o/--output` (defaults to the
+input basename + `_pretty.xlsx`), `--sheet` (sheet number to read from an xlsx
+input), `--rownames_col`, `--pct_cols` (comma-separated column names), and
+`--zoom`. For an `.xlsx` input with more than one worksheet, the script errors
+unless `--sheet` is given, so no data is dropped silently.
+
 ## Two-category bar plot
 
 `two_category_barplot()` makes a 100% stacked bar chart showing the

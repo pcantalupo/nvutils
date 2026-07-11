@@ -17,10 +17,13 @@ Imports:
     openxlsx,
     orthogene,
     readr,
+    stringr,
+    tibble,
     waldo
-Suggests: 
+Suggests:
     testthat (>= 3.0.0),
-    org.Hs.eg.db
+    org.Hs.eg.db,
+    withr
 Config/testthat/edition: 3
 URL: https://github.com/pcantalupo/nvutils
 BugReports: https://github.com/pcantalupo/nvutils/issues
