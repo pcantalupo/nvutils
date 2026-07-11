@@ -1,3 +1,16 @@
+# nvutils 1.0.4
+
+* Added `write_xlsx_pretty()`, which writes a single data frame to an XLSX with
+  left/top cell alignment, auto column widths, character columns forced to text
+  format (preserving leading zeros), `YYYY-MM-DD` dates, an initial worksheet
+  zoom, and a large default window size. The `pct_cols` argument handles columns
+  that mix numeric percentages (e.g. `0.9` shown as `90%`) with free text (e.g.
+  `<90%`). Requires the new `tibble` and `stringr` imports.
+* Added `inst/scripts/write_xlsx_pretty.R`, a command-line wrapper that reads
+  `.tsv`/`.txt`/`.xlsx` input and writes a prettified `.xlsx`. It errors on
+  multi-sheet Excel input unless `--sheet` is given, so no data is dropped
+  silently.
+
 # nvutils 1.0.3
 
 * `two_category_barplot()` now takes a `colors` argument (defaulting to the
