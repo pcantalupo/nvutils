@@ -1,3 +1,11 @@
+# nvutils 1.0.5
+
+* Added an `--infer_types` flag to the `inst/scripts/write_xlsx_pretty.R` CLI.
+  By default `.tsv`/`.txt` inputs are read with every column as text (to
+  preserve leading zeros), which stores numeric columns as text in the
+  workbook; `--infer_types` lets `fread` infer column types so numeric columns
+  are written as real numbers.
+
 # nvutils 1.0.4
 
 * Added `write_xlsx_pretty()`, which writes a single data frame to an XLSX with
