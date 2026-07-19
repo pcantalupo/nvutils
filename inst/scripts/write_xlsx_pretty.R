@@ -20,7 +20,11 @@ option_list <- list(
                            "percentages and text (e.g. 0.9 shown as 90%, '<90%'",
                            "kept as text)")),
   make_option("--zoom", type = "integer", default = 170L,
-              help = "Initial worksheet zoom percentage [default: %default]")
+              help = "Initial worksheet zoom percentage [default: %default]"),
+  make_option("--infer_types", action = "store_true", default = FALSE,
+              help = paste("Let fread infer column types instead of reading all",
+                           "columns as text (numeric columns become numbers;",
+                           "leading zeros in ID-like columns may be lost)"))
 )
 
 parser <- OptionParser(option_list = option_list)
@@ -54,8 +58,12 @@ if (ext == "xlsx") {
   }
   data <- openxlsx::read.xlsx(opt$input, sheet = sheet_to_read)
 } else if (ext %in% c("tsv", "txt", "")) {
-  data <- data.table::fread(opt$input, colClasses = "character",
-                            na.strings = NULL, data.table = FALSE)
+  if (opt$infer_types) {
+    data <- data.table::fread(opt$input, na.strings = NULL, data.table = FALSE)
+  } else {
+    data <- data.table::fread(opt$input, colClasses = "character",
+                              na.strings = NULL, data.table = FALSE)
+  }
 } else {
   stop("unsupported input extension '", ext, "'; use .tsv, .txt, or .xlsx")
 }

@@ -63,9 +63,16 @@ write_xlsx_pretty.R -i data.xlsx -o data_pretty.xlsx
 
 Required flag: `-i/--input`. Optional flags: `-o/--output` (defaults to the
 input basename + `_pretty.xlsx`), `--sheet` (sheet number to read from an xlsx
-input), `--rownames_col`, `--pct_cols` (comma-separated column names), and
-`--zoom`. For an `.xlsx` input with more than one worksheet, the script errors
-unless `--sheet` is given, so no data is dropped silently.
+input), `--rownames_col`, `--pct_cols` (comma-separated column names),
+`--zoom`, and `--infer_types`. For an `.xlsx` input with more than one
+worksheet, the script errors unless `--sheet` is given, so no data is dropped
+silently.
+
+By default, `.tsv`/`.txt` inputs are read with every column as text, which
+preserves leading zeros (e.g. ID `001`) but stores numeric columns as text in
+the resulting workbook. Pass `--infer_types` to let `fread` infer column types
+so numeric columns are written as real numbers; note that leading zeros in
+ID-like columns may then be lost.
 
 ## Two-category bar plot
 
