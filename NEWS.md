@@ -1,3 +1,8 @@
+# nvutils 1.0.6
+
+* `waldo_compare_files()` now reads `.qs2` files via `qs2::qs_read()`, added
+  `qs2` to Imports.
+
 # nvutils 1.0.5
 
 * Added an `--infer_types` flag to the `inst/scripts/write_xlsx_pretty.R` CLI.
