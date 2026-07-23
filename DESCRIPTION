@@ -16,6 +16,7 @@ Imports:
     methods,
     openxlsx,
     orthogene,
+    qs2,
     readr,
     stringr,
     tibble,

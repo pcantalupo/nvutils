@@ -13,6 +13,7 @@
 #' @importFrom openxlsx read.xlsx
 #' @importFrom tools file_ext
 #' @importFrom waldo compare
+#' @importFrom qs2 qs_read
 #'
 #' @examples
 #' \dontrun{
@@ -30,6 +31,8 @@ waldo_compare_files = function(file1, file2, max_diffs = Inf, ...) {
       stop("No file extension found for file ", file)
     } else if (ext == "rds") {
       objects[[file]] = readRDS(file)
+    } else if (ext == "qs2") {
+      objects[[file]] = qs_read(file)
     } else if (ext == "txt") {
       objects[[file]] = readLines(file)
     } else if (ext == "tsv") {
