@@ -1,16 +1,19 @@
-library(org.Hs.eg.db)
 test_that("org.Hs.eg.db works (returned ids match order and length of the input ids)", {
+  skip_if_not_installed("org.Hs.eg.db")
+
   ids = c("TP53", "AKAP17A")
   idtype = "SYMBOL"
-  res = annotateids(org.Hs.eg.db, ids = ids, idtype = idtype,
+  res = annotateids(org.Hs.eg.db::org.Hs.eg.db, ids = ids, idtype = idtype,
                     columns = c("ENSEMBL","GENENAME","GENETYPE"))
   expect_equal(res$SYMBOL, ids)
 })
 
 test_that("'keep' = TRUE works", {
+  skip_if_not_installed("org.Hs.eg.db")
+
   ids = c("TP53", "AKAP17A")
   idtype = "SYMBOL"
-  res = annotateids(org.Hs.eg.db, ids = ids, idtype = idtype,
+  res = annotateids(org.Hs.eg.db::org.Hs.eg.db, ids = ids, idtype = idtype,
                     columns = c("ENSEMBL","GENENAME","GENETYPE"), keep = TRUE)
 
   # expect two rows for AKAP17A
@@ -21,9 +24,11 @@ test_that("'keep' = TRUE works", {
 })
 
 test_that("non-existent IDs are handled correctly", {
+  skip_if_not_installed("org.Hs.eg.db")
+
   ids = c("TP53", "FOOBAR", "AKAP17A")
   idtype = "SYMBOL"
-  res = annotateids(org.Hs.eg.db, ids = ids, idtype = idtype,
+  res = annotateids(org.Hs.eg.db::org.Hs.eg.db, ids = ids, idtype = idtype,
                     columns = c("ENSEMBL","GENENAME","GENETYPE"))
   expect_equal(res$SYMBOL, ids)
   expect_true(is.na(res$ENSEMBL[2]))
@@ -32,18 +37,22 @@ test_that("non-existent IDs are handled correctly", {
 })
 
 test_that("different ID types work", {
+  skip_if_not_installed("org.Hs.eg.db")
+
   ids = c("7157", "22848")  # ENTREZ IDs for TP53 and AAK1
   idtype = "ENTREZID"
-  res = annotateids(org.Hs.eg.db, ids = ids, idtype = idtype,
+  res = annotateids(org.Hs.eg.db::org.Hs.eg.db, ids = ids, idtype = idtype,
                     columns = c("SYMBOL","GENENAME","GENETYPE"))
   expect_equal(res$ENTREZID, ids)
   expect_equal(res$SYMBOL, c("TP53", "AAK1"))
 })
 
 test_that("empty input is handled correctly", {
+  skip_if_not_installed("org.Hs.eg.db")
+
   ids = character(0)
   idtype = "SYMBOL"
-  res = annotateids(org.Hs.eg.db, ids = ids, idtype = idtype,
+  res = annotateids(org.Hs.eg.db::org.Hs.eg.db, ids = ids, idtype = idtype,
                     columns = c("ENSEMBL","GENENAME","GENETYPE"))
   expect_equal(nrow(res), 0)
   expect_equal(ncol(res), 4)
