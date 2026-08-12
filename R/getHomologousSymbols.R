@@ -51,13 +51,6 @@
 #' getHomologousSymbols(c("Tp53", "Brca1"), current = "mouse", target = "rat")
 #'
 getHomologousSymbols <- function(symbols, current = "mouse", target = "human") {
-  # Check if orthogene is available
-  if (!requireNamespace("orthogene", quietly = TRUE)) {
-    stop("Package 'orthogene' is required but not installed. ",
-         "Install it with: BiocManager::install('orthogene')",
-         call. = FALSE)
-  }
-
   # Input validation
   if (!is.character(symbols) || length(symbols) == 0) {
     stop("symbols must be a non-empty character vector", call. = FALSE)

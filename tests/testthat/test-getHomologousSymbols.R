@@ -1,8 +1,6 @@
 # tests/testthat/test-homology.R
 
 test_that("getHomologousSymbols maintains input order and length", {
-  skip_if_not_installed("orthogene")
-
   mouse_genes <- c("Trp53", "Brca1", "Pbsn")
   result <- getHomologousSymbols(mouse_genes, current = "mouse", target = "human")
 
@@ -24,8 +22,6 @@ test_that("getHomologousSymbols maintains input order and length", {
 })
 
 test_that("getHomologousSymbols works for human to mouse conversion", {
-  skip_if_not_installed("orthogene")
-
   human_genes <- c("TP53", "BRCA1")
   result <- getHomologousSymbols(human_genes, current = "human", target = "mouse")
 
@@ -35,8 +31,6 @@ test_that("getHomologousSymbols works for human to mouse conversion", {
 })
 
 test_that("getHomologousSymbols handles all missing orthologs", {
-  skip_if_not_installed("orthogene")
-
   # Using fake gene names that won't have orthologs
   fake_genes <- c("FAKEGENE1", "FAKEGENE2", "FAKEGENE3")
   result <- getHomologousSymbols(fake_genes, current = "mouse", target = "human")
@@ -47,8 +41,6 @@ test_that("getHomologousSymbols handles all missing orthologs", {
 })
 
 test_that("getHomologousSymbols validates input", {
-  skip_if_not_installed("orthogene")
-
   # Test empty vector
   expect_error(
     getHomologousSymbols(character(0)),
