@@ -1,3 +1,3 @@
 test_that("object_info requires an obj argument", {
-  expect_error(object_info())
+  expect_error(object_info(), "obj param is missing")
 })
