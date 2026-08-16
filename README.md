@@ -27,10 +27,12 @@ xlsx2tsv(xlsxfile, tsvoutfile)
 ## Nicely-formatted Excel output
 
 `write_xlsx_pretty()` writes a single data frame to an XLSX with `openxlsx`,
-fixing the default formatting: left/top cell alignment, auto column widths,
-character columns forced to text format (so values like `001` keep their
+fixing the default formatting: left/top cell alignment on the header row and
+the data, auto column widths, character columns forced to text format (so
+values like `001` keep their
 leading zeros), dates shown as `YYYY-MM-DD`, an initial worksheet zoom, and a
-large default window size.
+large default window size. Column widths are auto-fitted but capped, so a single
+long free-text column cannot stretch to an unreadable width.
 
 ``` r
 library(nvutils)
@@ -43,9 +45,17 @@ write_xlsx_pretty(df, "response.xlsx", pct_cols = "Chemo_Response")
 ```
 
 Arguments: `df`, `path`, `sheet` (worksheet name), `zoom`, `rownames_col`
-(move row names into a first column), `window_width`, `window_height`, and
-`pct_cols` (columns mixing numeric percentages with free text). Returns
-invisible `NULL`; called for the side effect of writing the file.
+(move row names into a first column), `window_width`, `window_height`,
+`pct_cols` (columns mixing numeric percentages with free text),
+`max_col_width` (default 100), and `wrap_text` (default `TRUE`).
+`max_col_width` is in the same character units Excel shows in its right-click
+"Column Width" dialog: columns whose widest value exceeds it are pinned to it,
+narrower columns keep their auto-fitted width, and `NULL` disables the cap so
+widths auto-fit up to Excel's 250-character ceiling. Since a capped column is
+narrower than its longest value, `wrap_text` wraps that overflow inside the cell
+instead of letting it spill across empty neighbouring cells; Excel auto-fits the
+row height, so rows with long values render taller. Returns invisible `NULL`;
+called for the side effect of writing the file.
 
 ### Command-line usage
 
@@ -64,7 +74,9 @@ write_xlsx_pretty.R -i data.xlsx -o data_pretty.xlsx
 Required flag: `-i/--input`. Optional flags: `-o/--output` (defaults to the
 input basename + `_pretty.xlsx`), `--sheet` (sheet number to read from an xlsx
 input), `--rownames_col`, `--pct_cols` (comma-separated column names),
-`--zoom`, and `--infer_types`. For an `.xlsx` input with more than one
+`--zoom`, `--max_col_width` (characters, default 100; use `0` for no cap),
+`--no_wrap_text` (turn off the default cell wrapping), and
+`--infer_types`. For an `.xlsx` input with more than one
 worksheet, the script errors unless `--sheet` is given, so no data is dropped
 silently.
 

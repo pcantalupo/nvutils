@@ -21,6 +21,14 @@ option_list <- list(
                            "kept as text)")),
   make_option("--zoom", type = "integer", default = 170L,
               help = "Initial worksheet zoom percentage [default: %default]"),
+  make_option("--max_col_width", type = "integer", default = 100L,
+              help = paste("Cap column width at this many characters, matching",
+                           "Excel's Column Width dialog. Use 0 for no cap",
+                           "[default: %default]")),
+  make_option("--no_wrap_text", action = "store_true", default = FALSE,
+              help = paste("Do not wrap cell contents. By default cells wrap so",
+                           "a value longer than its column does not spill across",
+                           "neighbouring cells")),
   make_option("--infer_types", action = "store_true", default = FALSE,
               help = paste("Let fread infer column types instead of reading all",
                            "columns as text (numeric columns become numbers;",
@@ -80,11 +88,19 @@ if (!is.null(opt$pct_cols)) {
   pct_cols <- trimws(strsplit(opt$pct_cols, ",")[[1]])
 }
 
+# 0 is the CLI spelling of "no cap", which the function takes as NULL
+max_col_width = opt$max_col_width
+if (max_col_width <= 0) {
+  max_col_width = NULL
+}
+
 # Write the prettified workbook
 write_xlsx_pretty(data, output,
                   zoom = opt$zoom,
                   rownames_col = opt$rownames_col,
-                  pct_cols = pct_cols)
+                  pct_cols = pct_cols,
+                  max_col_width = max_col_width,
+                  wrap_text = !opt$no_wrap_text)
 
 cat("Wrote", output, "\n")
 
