@@ -1,3 +1,22 @@
+# nvutils 1.0.7
+
+* `write_xlsx_pretty()` gained `max_col_width` (default 100), which caps column
+  widths in the same character units Excel shows in its "Column Width" dialog.
+  openxlsx resolves `widths = "auto"` at save time and stops only at Excel's
+  250-character ceiling, so a single long free-text column rendered unreadably
+  wide. Columns under the cap keep their auto-fitted width; `NULL` disables the
+  cap.
+* `write_xlsx_pretty()` gained `wrap_text` (default `TRUE`), which wraps cell
+  contents so a value longer than its column does not spill across whichever
+  neighbouring cells happen to be empty.
+* `write_xlsx_pretty()` now applies left/top alignment to the header row as well
+  as the data.
+* The `inst/scripts/write_xlsx_pretty.R` CLI gained `--max_col_width` (use `0`
+  for no cap) and `--no_wrap_text`.
+* Test suite maintenance: `withr::local_file()` for output cleanup, `annotateids`
+  tests skip when `org.Hs.eg.db` is not installed, and unreachable `orthogene`
+  availability checks were removed.
+
 # nvutils 1.0.6
 
 * `waldo_compare_files()` now reads `.qs2` files via `qs2::qs_read()`, added
