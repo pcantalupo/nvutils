@@ -1,3 +1,11 @@
+# nvutils 1.0.8
+
+* `waldo_compare_files()` now compares every worksheet of an `.xlsx` file.
+  `openxlsx::read.xlsx()` reads only the first sheet, so differences in any
+  other sheet went unreported. Each sheet is read into a named list, so waldo
+  reports differences per sheet name and flags sheets present in only one of
+  the two files.
+
 # nvutils 1.0.7
 
 * `write_xlsx_pretty()` gained `max_col_width` (default 100), which caps column
