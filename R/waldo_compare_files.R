@@ -1,6 +1,7 @@
 #' @title Compare two files
 #' @description
-#' Compare two files using waldo::compare
+#' Compare two files using waldo::compare. For xlsx files, all sheets are read
+#' into a named list so every sheet is compared.
 #'
 #' @param file1 Filename for the first file
 #' @param file2 Filename for the second file
@@ -10,7 +11,7 @@
 #' @return The result of waldo::compare()
 #' @export
 #' @importFrom readr read_tsv
-#' @importFrom openxlsx read.xlsx
+#' @importFrom openxlsx read.xlsx getSheetNames
 #' @importFrom tools file_ext
 #' @importFrom waldo compare
 #' @importFrom qs2 qs_read
@@ -38,7 +39,11 @@ waldo_compare_files = function(file1, file2, max_diffs = Inf, ...) {
     } else if (ext == "tsv") {
       objects[[file]] = read_tsv(file, show_col_types = FALSE)
     } else if (ext == "xlsx") {
-      objects[[file]] = read.xlsx(file)
+      sheets = getSheetNames(file)
+      # simplify = FALSE keeps a named list of data frames; sapply would
+      # otherwise collapse sheets sharing a column count into a list-matrix
+      objects[[file]] = sapply(sheets, function(s) read.xlsx(file, sheet = s),
+                               simplify = FALSE)
     } else {
       stop("File extension, ", ext, ", not supported")
     }

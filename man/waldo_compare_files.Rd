@@ -19,7 +19,8 @@ waldo_compare_files(file1, file2, max_diffs = Inf, ...)
 The result of waldo::compare()
 }
 \description{
-Compare two files using waldo::compare
+Compare two files using waldo::compare. For xlsx files, all sheets are read
+into a named list so every sheet is compared.
 }
 \examples{
 \dontrun{
