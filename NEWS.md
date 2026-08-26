@@ -1,3 +1,10 @@
+# nvutils 1.1.1
+
+* All five scripts in `inst/scripts/` now print the full option list when given
+  a positional argument, followed by an error naming the offending arguments,
+  instead of aborting inside getopt with `"foo.tsv" is not a valid option, or
+  does not support an argument` and a one-line usage.
+
 # nvutils 1.1.0
 
 * `inst/scripts/xlsx2tsv.R`, `inst/scripts/tsv2xlsx.R` and
