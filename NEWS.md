@@ -1,3 +1,19 @@
+# nvutils 1.1.0
+
+* `inst/scripts/xlsx2tsv.R`, `inst/scripts/tsv2xlsx.R` and
+  `inst/scripts/waldocompare.R` now parse arguments with optparse, matching
+  `write_xlsx_pretty.R` and `two_category_barplot.R`. Each script gains
+  `--help`, per-option help text, and validation that runs before nvutils is
+  loaded. **Breaking:** positional arguments are no longer accepted; use
+  `-i/--input`, `-o/--output`, `--sheet`, `-v/--verbose`, and
+  `--file1`/`--file2` instead.
+* `-v/--verbose` is a flag rather than a string compared against `TRUE`, so it
+  no longer ignores anything but the literal `"TRUE"`.
+* `xlsx2tsv.R` accepts `--sheet` as either a number or a sheet name without
+  emitting a coercion warning for named sheets.
+* `waldocompare.R` validates that both files are supplied and exist instead of
+  passing missing arguments through to `waldo_compare_files()`.
+
 # nvutils 1.0.8
 
 * `waldo_compare_files()` now compares every worksheet of an `.xlsx` file.
