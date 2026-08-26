@@ -14,7 +14,16 @@ option_list <- list(
 )
 
 parser <- OptionParser(option_list = option_list)
-opt <- parse_args(parser)
+# positional_arguments = TRUE keeps getopt from erroring out on a bare
+# argument, so leftovers are reported here with the full help instead
+parsed <- parse_args(parser, positional_arguments = TRUE)
+opt <- parsed$options
+
+if (length(parsed$args) > 0) {
+  print_help(parser)
+  stop("unexpected argument(s): ", paste(parsed$args, collapse = ", "),
+       "\n  all arguments must be given as named flags (see usage above)")
+}
 
 # Argument validation
 if (is.null(opt$input)) {
