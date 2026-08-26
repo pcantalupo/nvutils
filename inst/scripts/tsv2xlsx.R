@@ -1,26 +1,43 @@
 #!/usr/bin/env Rscript
-pacman::p_load('nvutils')
+# Load only optparse up front so --help and arg errors return fast; nvutils
+# (and its dependencies) is loaded after validation passes.
+pacman::p_load('optparse')
 
 # Arguments
-args = commandArgs(trailingOnly = TRUE)
-file = args[1]      # file = "example_tsv.tsv"
-outfile = args[2]   # outfile = "foo.xlsx"
-verbose = args[3]     # verbose = TRUE
+option_list <- list(
+  make_option(c("-i", "--input"), type = "character", default = NULL,
+              help = "Input TSV file [required]"),
+  make_option(c("-o", "--output"), type = "character", default = NULL,
+              help = "Output XLSX path [default: input basename + .xlsx]"),
+  make_option(c("-v", "--verbose"), action = "store_true", default = FALSE,
+              help = "Print session_info() after writing")
+)
+
+parser <- OptionParser(option_list = option_list)
+opt <- parse_args(parser)
 
 # Argument validation
-stopifnot(file.exists(file))
-if (is.na(outfile)) {
-  outfile = paste0(tools::file_path_sans_ext(file), ".xlsx")
+if (is.null(opt$input)) {
+  print_help(parser)
+  stop("--input is required")
 }
-if (is.na(verbose)) { verbose = FALSE }
+if (!file.exists(opt$input)) {
+  stop("input file not found: ", opt$input)
+}
 
+# Load the package only after args validate
+pacman::p_load('nvutils')
+
+# Derive output path if not supplied
+output <- opt$output
+if (is.null(output)) {
+  output <- paste0(tools::file_path_sans_ext(opt$input), ".xlsx")
+}
 
 # Convert TSV to XLSX
-tsv2xlsx(file, outfile, colClasses = "character", na.strings = NULL)
+tsv2xlsx(opt$input, output, colClasses = "character", na.strings = NULL)
 
-
-if (verbose == TRUE) {
+if (opt$verbose) {
   cat("\n\n")
   devtools::session_info()
 }
-

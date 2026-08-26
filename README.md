@@ -24,6 +24,34 @@ library(nvutils)
 xlsx2tsv(xlsxfile, tsvoutfile)
 ```
 
+### Command-line usage
+
+`inst/scripts/xlsx2tsv.R`, `inst/scripts/tsv2xlsx.R`, and
+`inst/scripts/waldocompare.R` wrap `xlsx2tsv()`, `tsv2xlsx()`, and
+`waldo_compare_files()` as CLI tools. All three take named flags; positional
+arguments are not supported.
+
+``` sh
+## xlsx to tsv (defaults to the input basename + .tsv)
+xlsx2tsv.R -i data.xlsx
+
+## a specific worksheet, by number or by name
+xlsx2tsv.R -i data.xlsx --sheet 2 -o sheet2.tsv
+xlsx2tsv.R -i data.xlsx --sheet "Sheet 1" -o sheet1.tsv
+
+## tsv to xlsx (defaults to the input basename + .xlsx)
+tsv2xlsx.R -i data.tsv -o data.xlsx
+
+## compare two files
+waldocompare.R --file1 old.tsv --file2 new.tsv
+```
+
+For `xlsx2tsv.R` and `tsv2xlsx.R`: required flag `-i/--input`; optional flags
+`-o/--output` (defaults to the input basename with the new extension) and
+`-v/--verbose` (print `session_info()` after writing). `xlsx2tsv.R` also takes
+`--sheet`, which accepts either a sheet number or a sheet name (default `1`).
+`waldocompare.R` requires both `--file1` and `--file2`.
+
 ## Nicely-formatted Excel output
 
 `write_xlsx_pretty()` writes a single data frame to an XLSX with `openxlsx`,

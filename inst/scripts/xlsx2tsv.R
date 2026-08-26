@@ -1,36 +1,51 @@
 #!/usr/bin/env Rscript
-pacman::p_load('nvutils')
+# Load only optparse up front so --help and arg errors return fast; nvutils
+# (and its dependencies) is loaded after validation passes.
+pacman::p_load('optparse')
 
 # Arguments
-args = commandArgs(trailingOnly = TRUE)
-file = args[1]      # file = "foo.xlsx"
-outfile = args[2]   # outfile = "foo.tsv"
-sheet = args[3]
-verbose = args[4]     # verbose = TRUE
+option_list <- list(
+  make_option(c("-i", "--input"), type = "character", default = NULL,
+              help = "Input XLSX file [required]"),
+  make_option(c("-o", "--output"), type = "character", default = NULL,
+              help = "Output TSV path [default: input basename + .tsv]"),
+  make_option("--sheet", type = "character", default = "1",
+              help = "Sheet number or sheet name to read [default: %default]"),
+  make_option(c("-v", "--verbose"), action = "store_true", default = FALSE,
+              help = "Print session_info() after writing")
+)
+
+parser <- OptionParser(option_list = option_list)
+opt <- parse_args(parser)
 
 # Argument validation
-stopifnot(file.exists(file))
-
-if (is.na(outfile)) {
-  outfile = paste0(tools::file_path_sans_ext(file), ".tsv")
+if (is.null(opt$input)) {
+  print_help(parser)
+  stop("--input is required")
+}
+if (!file.exists(opt$input)) {
+  stop("input file not found: ", opt$input)
 }
 
-if (is.na(sheet)) {
-  sheet = 1  # when not set by user, set to default value of 1
-} else {
-  if (!is.na(as.integer(sheet))) {  # integer value used by user
-    sheet = as.integer(sheet)
-  }
+# Load the package only after args validate
+pacman::p_load('nvutils')
+
+# Derive output path if not supplied
+output <- opt$output
+if (is.null(output)) {
+  output <- paste0(tools::file_path_sans_ext(opt$input), ".tsv")
 }
 
-if (is.na(verbose)) { verbose = FALSE }
-
+# A sheet given as digits is an index; anything else is a sheet name
+sheet <- opt$sheet
+if (grepl("^[0-9]+$", sheet)) {
+  sheet <- as.integer(sheet)
+}
 
 # Convert XLSX to TSV
-xlsx2tsv(file, outfile, sheet = sheet)
+xlsx2tsv(opt$input, output, sheet = sheet)
 
-
-if (verbose == TRUE) {
+if (opt$verbose) {
   cat("\n\n")
   devtools::session_info()
 }
