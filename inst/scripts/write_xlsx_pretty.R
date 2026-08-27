@@ -10,11 +10,13 @@ option_list <- list(
   make_option(c("-o", "--output"), type = "character", default = NULL,
               help = "Output XLSX path [default: input basename + _pretty.xlsx]"),
   make_option("--sheet", type = "integer", default = NULL,
-              help = paste("Sheet number to read from an xlsx input. If omitted",
-                           "and the workbook has more than one sheet, the script",
-                           "errors rather than guess [default: sole sheet]")),
+              help = paste("Sheet number to read from an xlsx input. If",
+                           "omitted, every worksheet is read and prettified",
+                           "into the output workbook [default: all sheets]")),
   make_option("--rownames_col", type = "character", default = NULL,
-              help = "If set, move row names into a first column with this name"),
+              help = paste("If set, move row names into a first column with",
+                           "this name. Single-table inputs only: a tsv/txt",
+                           "input, or an xlsx input with --sheet")),
   make_option("--pct_cols", type = "character", default = NULL,
               help = paste("Comma-separated column names holding mixed numeric",
                            "percentages and text (e.g. 0.9 shown as 90%, '<90%'",
@@ -60,20 +62,21 @@ if (!file.exists(opt$input)) {
 pacman::p_load('nvutils')
 
 # Read input by extension
-ext <- tolower(tools::file_ext(opt$input))
+ext = tolower(tools::file_ext(opt$input))
+# Worksheet name for the output when a single table is written; on the
+# multi-sheet path write_xlsx_pretty() takes the names from the list instead.
+sheet_name = "Sheet 1"
 if (ext == "xlsx") {
-  sheets <- openxlsx::getSheetNames(opt$input)
+  sheets = openxlsx::getSheetNames(opt$input)
   if (is.null(opt$sheet)) {
-    if (length(sheets) > 1) {
-      stop("input has ", length(sheets), " worksheets (",
-           paste(sheets, collapse = ", "),
-           "); re-run with --sheet to choose one")
-    }
-    sheet_to_read <- 1L
+    # No --sheet: read every worksheet so all of them get prettified.
+    data = lapply(seq_along(sheets),
+                  function(i) openxlsx::read.xlsx(opt$input, sheet = i))
+    names(data) = sheets
   } else {
-    sheet_to_read <- opt$sheet
+    data = openxlsx::read.xlsx(opt$input, sheet = opt$sheet)
+    sheet_name = sheets[opt$sheet]
   }
-  data <- openxlsx::read.xlsx(opt$input, sheet = sheet_to_read)
 } else if (ext %in% c("tsv", "txt", "")) {
   if (opt$infer_types) {
     data <- data.table::fread(opt$input, na.strings = NULL, data.table = FALSE)
@@ -105,6 +108,7 @@ if (max_col_width <= 0) {
 
 # Write the prettified workbook
 write_xlsx_pretty(data, output,
+                  sheet = sheet_name,
                   zoom = opt$zoom,
                   rownames_col = opt$rownames_col,
                   pct_cols = pct_cols,
