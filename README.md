@@ -107,14 +107,16 @@ write_xlsx_pretty.R -i data.xlsx -o data_pretty.xlsx
 ## multi-sheet xlsx in: every worksheet prettified, names preserved
 write_xlsx_pretty.R -i workbook.xlsx
 
-## just one worksheet of a multi-sheet workbook
+## just one worksheet of a multi-sheet workbook, by number or by name
 write_xlsx_pretty.R -i workbook.xlsx --sheet 2
+write_xlsx_pretty.R -i workbook.xlsx --sheet top_combined
 ```
 
 Required flag: `-i/--input`. Optional flags: `-o/--output` (defaults to the
-input basename + `_pretty.xlsx`), `--sheet` (sheet number to read from an xlsx
-input), `--rownames_col` (single-table inputs only: a `.tsv`/`.txt` input, or
-an `.xlsx` input with `--sheet`), `--pct_cols` (comma-separated column names,
+input basename + `_pretty.xlsx`), `--sheet` (worksheet to read from an xlsx
+input, by number or by name), `--rownames_col` (single-table inputs only: a
+`.tsv`/`.txt` input, or an `.xlsx` input with `--sheet`), `--pct_cols`
+(comma-separated column names,
 applied across all sheets), `--zoom`, `--max_col_width` (characters, default
 100; use `0` for no cap), `--no_wrap_text` (turn off the default cell
 wrapping), and `--infer_types`. An `.xlsx` input is read in full by default:

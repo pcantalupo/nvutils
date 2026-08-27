@@ -9,10 +9,11 @@ option_list <- list(
               help = "Input data file (.tsv, .txt, or .xlsx) [required]"),
   make_option(c("-o", "--output"), type = "character", default = NULL,
               help = "Output XLSX path [default: input basename + _pretty.xlsx]"),
-  make_option("--sheet", type = "integer", default = NULL,
-              help = paste("Sheet number to read from an xlsx input. If",
-                           "omitted, every worksheet is read and prettified",
-                           "into the output workbook [default: all sheets]")),
+  make_option("--sheet", type = "character", default = NULL,
+              help = paste("Worksheet to read from an xlsx input, by number",
+                           "or by name. If omitted, every worksheet is read",
+                           "and prettified into the output workbook",
+                           "[default: all sheets]")),
   make_option("--rownames_col", type = "character", default = NULL,
               help = paste("If set, move row names into a first column with",
                            "this name. Single-table inputs only: a tsv/txt",
@@ -74,8 +75,21 @@ if (ext == "xlsx") {
                   function(i) openxlsx::read.xlsx(opt$input, sheet = i))
     names(data) = sheets
   } else {
-    data = openxlsx::read.xlsx(opt$input, sheet = opt$sheet)
-    sheet_name = sheets[opt$sheet]
+    # --sheet arrives as a string. read.xlsx() reads by position for a number
+    # and by name for a character, so a digit-only value becomes an integer.
+    # It also validates: a bad name or an out-of-range number errors here,
+    # before sheet_name is derived.
+    if (grepl("^[0-9]+$", opt$sheet)) {
+      sheet_arg = as.integer(opt$sheet)
+    } else {
+      sheet_arg = opt$sheet
+    }
+    data = openxlsx::read.xlsx(opt$input, sheet = sheet_arg)
+    if (is.character(sheet_arg)) {
+      sheet_name = sheet_arg
+    } else {
+      sheet_name = sheets[sheet_arg]
+    }
   }
 } else if (ext %in% c("tsv", "txt", "")) {
   if (opt$infer_types) {
