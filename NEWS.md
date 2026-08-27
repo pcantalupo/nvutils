@@ -1,3 +1,30 @@
+# nvutils 1.2.0
+
+* `write_xlsx_pretty()` accepts a named list of data frames in `df`, writing one
+  worksheet per element named by its list name, with the same per-sheet styling
+  applied to each: header and data alignment, auto column widths capped at
+  `max_col_width`, `wrap_text`, text format for character columns, `YYYY-MM-DD`
+  for dates, and `pct_cols`. A single data frame behaves exactly as before.
+  `sheet` is ignored for a list, and `rownames_col` is not supported there,
+  since row names differ per data frame; call `tibble::rownames_to_column()` on
+  each element first.
+* `inst/scripts/write_xlsx_pretty.R` reads every worksheet of an `.xlsx` input
+  by default and prettifies all of them into the output workbook, instead of
+  erroring when the input has more than one worksheet. `--sheet` remains the way
+  to convert a single worksheet.
+* `write_xlsx_pretty.R` accepts `--sheet` as either a number or a sheet name
+  without emitting a coercion warning for named sheets, matching `xlsx2tsv.R`.
+* **Breaking:** an `.xlsx` output worksheet now carries the input worksheet's
+  name rather than the default `Sheet 1`. Code that reads these workbooks by
+  sheet name is affected; reading by index is not.
+* **Breaking:** `--rownames_col` applies only to single-table inputs — a
+  `.tsv`/`.txt` input, or an `.xlsx` input with `--sheet`. Passing it with a
+  multi-sheet read now errors. It only ever produced a column of row numbers for
+  file input, since `read.xlsx()` and `fread()` both return default row names.
+* **Breaking:** `write_xlsx_pretty()` rejects an input that is neither a data
+  frame nor a list. A matrix previously wrote successfully through
+  `openxlsx::writeData()`.
+
 # nvutils 1.1.1
 
 * All five scripts in `inst/scripts/` now print the full option list when given
