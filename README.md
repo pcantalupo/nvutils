@@ -116,14 +116,12 @@ Required flag: `-i/--input`. Optional flags: `-o/--output` (defaults to the
 input basename + `_pretty.xlsx`), `--sheet` (worksheet to read from an xlsx
 input, by number or by name), `--rownames_col` (single-table inputs only: a
 `.tsv`/`.txt` input, or an `.xlsx` input with `--sheet`), `--pct_cols`
-(comma-separated column names,
-applied across all sheets), `--zoom`, `--max_col_width` (characters, default
-100; use `0` for no cap), `--no_wrap_text` (turn off the default cell
-wrapping), and `--infer_types`. An `.xlsx` input is read in full by default:
-every worksheet is prettified into the output workbook under its original
-name. Pass `--sheet` to read only that one worksheet, whose name is likewise
-carried into the output. Note that xlsx output worksheets now carry their
-input names rather than the previous `Sheet 1`.
+(comma-separated column names, applied across all sheets), `--zoom`,
+`--max_col_width` (characters, default 100; use `0` for no cap),
+`--no_wrap_text` (turn off the default cell wrapping), and `--infer_types`.
+An `.xlsx` input is read in full by default: every worksheet is prettified
+into the output workbook under its original name. Pass `--sheet` to read only
+that one worksheet, whose name is likewise carried into the output.
 
 By default, `.tsv`/`.txt` inputs are read with every column as text, which
 preserves leading zeros (e.g. ID `001`) but stores numeric columns as text in
