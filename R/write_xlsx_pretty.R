@@ -1,57 +1,10 @@
-#' @title Write a data frame to a nicely-formatted XLSX (Excel)
-#' @description Write a single data frame to an XLSX with openxlsx, applying formatting that fixes the default output: left/top cell alignment on the header row and the data, auto column widths capped at a readable maximum, text columns forced to text format (preserving leading zeros), dates shown as YYYY-MM-DD, an initial worksheet zoom, and a large default window size.
-#' @param df A data frame to write.
-#' @param path Output XLSX file path.
-#' @param sheet Worksheet name. Default "Sheet 1".
-#' @param zoom Initial worksheet zoom percentage. Default 170.
-#' @param rownames_col If non-NULL, the data frame's row names are moved into a new first column with this name (via tibble::rownames_to_column). Default NULL.
-#' @param window_width Excel workbook window width. Default 45000.
-#' @param window_height Excel workbook window height. Default 30000.
-#' @param pct_cols Character vector of column names holding mixed values where purely-numeric entries should be written as numbers with the "0\%" number format (so Excel shows e.g. "90\%") while non-numeric text entries (e.g. "<90\%", "No preop chemo") are written with general format. Default character(0).
-#' @param max_col_width Maximum column width, in the same character units Excel shows in its "Column Width" dialog. Columns whose widest value exceeds this are pinned to it; narrower columns keep the auto-fitted width. NULL disables the cap. Default 100.
-#' @param wrap_text Wrap cell contents instead of letting a value longer than its column spill across neighbouring cells. Default TRUE.
-#'
-#' @details
-#' Character columns are given Excel's text number format ("@") so values like
-#' "001" are not silently converted to numbers. Columns inheriting from Date or
-#' POSIXct are formatted as YYYY-MM-DD.
-#'
-#' The `pct_cols` argument handles columns that mix decimal values (e.g. 0.9,
-#' which Excel with the "0\%" format displays as "90\%") with free text (e.g.
-#' "<90\%"). For each such column, entries matching `^[0-9.]+$` are written as
-#' numeric with the "0\%" format and all other entries keep the general format.
-#'
-#' Column widths are auto-fitted, but openxlsx's auto-fit stops only at Excel's
-#' 250-character ceiling, so a single long free-text column can render
-#' unreadably wide. `max_col_width` pins such columns to a fixed width while
-#' leaving every other column's auto-fitted width untouched. Because a capped
-#' column is narrower than its longest value, `wrap_text` is on by default so
-#' the overflow wraps within the cell rather than spilling across whichever
-#' neighbouring cells happen to be empty. Excel auto-fits the row height for
-#' wrapped cells, so rows holding long values render taller.
-#'
-#' @return Invisible NULL. Called for its side effect of writing an XLSX file.
-#' @export
-#' @importFrom openxlsx createWorkbook addWorksheet writeData createStyle addStyle setColWidths saveWorkbook
-#' @importFrom tibble rownames_to_column
-#' @importFrom stringr str_detect
-#'
-#' @examples
-#' \dontrun{
-#' write_xlsx_pretty(mtcars, "mtcars.xlsx", rownames_col = "model")
-#'
-#' # A column mixing numeric percentages with text
-#' df <- data.frame(id = 1:2, Chemo_Response = c("0.9", "<90%"))
-#' write_xlsx_pretty(df, "response.xlsx", pct_cols = "Chemo_Response")
-#' }
-write_xlsx_pretty <- function(df, path, sheet = "Sheet 1", zoom = 170, rownames_col = NULL,
-                              window_width = 45000, window_height = 30000,
-                              pct_cols = character(0), max_col_width = 100,
-                              wrap_text = TRUE) {
-  if (!is.null(rownames_col)) {
-    df <- tibble::rownames_to_column(df, var = rownames_col)
-  }
-  wb <- openxlsx::createWorkbook()
+# Add one worksheet to an existing workbook and apply the whole per-sheet
+# style pass. Split out of write_xlsx_pretty() so the same styling runs for
+# every element of a multi-sheet list. openxlsx workbooks are reference
+# objects, so wb is mutated in place.
+#' @noRd
+write_pretty_sheet <- function(wb, sheet, df, zoom, pct_cols, max_col_width,
+                               wrap_text) {
   openxlsx::addWorksheet(wb, sheet, zoom = zoom)
   openxlsx::writeData(wb, sheet, df)
   cell_style <- openxlsx::createStyle(halign = "left", valign = "top",
@@ -115,6 +68,65 @@ write_xlsx_pretty <- function(df, path, sheet = "Sheet 1", zoom = 170, rownames_
       }
     }
   }
+  invisible(NULL)
+}
+
+#' @title Write a data frame to a nicely-formatted XLSX (Excel)
+#' @description Write a single data frame to an XLSX with openxlsx, applying formatting that fixes the default output: left/top cell alignment on the header row and the data, auto column widths capped at a readable maximum, text columns forced to text format (preserving leading zeros), dates shown as YYYY-MM-DD, an initial worksheet zoom, and a large default window size.
+#' @param df A data frame to write.
+#' @param path Output XLSX file path.
+#' @param sheet Worksheet name. Default "Sheet 1".
+#' @param zoom Initial worksheet zoom percentage. Default 170.
+#' @param rownames_col If non-NULL, the data frame's row names are moved into a new first column with this name (via tibble::rownames_to_column). Default NULL.
+#' @param window_width Excel workbook window width. Default 45000.
+#' @param window_height Excel workbook window height. Default 30000.
+#' @param pct_cols Character vector of column names holding mixed values where purely-numeric entries should be written as numbers with the "0\%" number format (so Excel shows e.g. "90\%") while non-numeric text entries (e.g. "<90\%", "No preop chemo") are written with general format. Default character(0).
+#' @param max_col_width Maximum column width, in the same character units Excel shows in its "Column Width" dialog. Columns whose widest value exceeds this are pinned to it; narrower columns keep the auto-fitted width. NULL disables the cap. Default 100.
+#' @param wrap_text Wrap cell contents instead of letting a value longer than its column spill across neighbouring cells. Default TRUE.
+#'
+#' @details
+#' Character columns are given Excel's text number format ("@") so values like
+#' "001" are not silently converted to numbers. Columns inheriting from Date or
+#' POSIXct are formatted as YYYY-MM-DD.
+#'
+#' The `pct_cols` argument handles columns that mix decimal values (e.g. 0.9,
+#' which Excel with the "0\%" format displays as "90\%") with free text (e.g.
+#' "<90\%"). For each such column, entries matching `^[0-9.]+$` are written as
+#' numeric with the "0\%" format and all other entries keep the general format.
+#'
+#' Column widths are auto-fitted, but openxlsx's auto-fit stops only at Excel's
+#' 250-character ceiling, so a single long free-text column can render
+#' unreadably wide. `max_col_width` pins such columns to a fixed width while
+#' leaving every other column's auto-fitted width untouched. Because a capped
+#' column is narrower than its longest value, `wrap_text` is on by default so
+#' the overflow wraps within the cell rather than spilling across whichever
+#' neighbouring cells happen to be empty. Excel auto-fits the row height for
+#' wrapped cells, so rows holding long values render taller.
+#'
+#' @return Invisible NULL. Called for its side effect of writing an XLSX file.
+#' @export
+#' @importFrom openxlsx createWorkbook addWorksheet writeData createStyle addStyle setColWidths saveWorkbook
+#' @importFrom tibble rownames_to_column
+#' @importFrom stringr str_detect
+#'
+#' @examples
+#' \dontrun{
+#' write_xlsx_pretty(mtcars, "mtcars.xlsx", rownames_col = "model")
+#'
+#' # A column mixing numeric percentages with text
+#' df <- data.frame(id = 1:2, Chemo_Response = c("0.9", "<90%"))
+#' write_xlsx_pretty(df, "response.xlsx", pct_cols = "Chemo_Response")
+#' }
+write_xlsx_pretty <- function(df, path, sheet = "Sheet 1", zoom = 170, rownames_col = NULL,
+                              window_width = 45000, window_height = 30000,
+                              pct_cols = character(0), max_col_width = 100,
+                              wrap_text = TRUE) {
+  if (!is.null(rownames_col)) {
+    df <- tibble::rownames_to_column(df, var = rownames_col)
+  }
+  wb <- openxlsx::createWorkbook()
+  write_pretty_sheet(wb, sheet, df, zoom = zoom, pct_cols = pct_cols,
+                     max_col_width = max_col_width, wrap_text = wrap_text)
   wb$workbook$bookViews <- sprintf(
     '<bookViews><workbookView xWindow="0" yWindow="0" windowWidth="%d" windowHeight="%d"/></bookViews>',
     window_width, window_height)
