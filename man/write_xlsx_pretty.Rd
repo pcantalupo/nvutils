@@ -18,15 +18,15 @@ write_xlsx_pretty(
 )
 }
 \arguments{
-\item{df}{A data frame to write.}
+\item{df}{A data frame, or a named list of data frames. For a list, each element becomes a worksheet named by its list name and the same styling is applied to every sheet. The list must be named, with no duplicate names.}
 
 \item{path}{Output XLSX file path.}
 
-\item{sheet}{Worksheet name. Default "Sheet 1".}
+\item{sheet}{Worksheet name, used only when `df` is a single data frame. Ignored for a list, whose worksheet names come from the list names. Default "Sheet 1".}
 
 \item{zoom}{Initial worksheet zoom percentage. Default 170.}
 
-\item{rownames_col}{If non-NULL, the data frame's row names are moved into a new first column with this name (via tibble::rownames_to_column). Default NULL.}
+\item{rownames_col}{If non-NULL, the data frame's row names are moved into a new first column with this name (via tibble::rownames_to_column). Not supported when `df` is a list; call tibble::rownames_to_column() on each element before building the list. Default NULL.}
 
 \item{window_width}{Excel workbook window width. Default 45000.}
 
@@ -42,7 +42,7 @@ write_xlsx_pretty(
 Invisible NULL. Called for its side effect of writing an XLSX file.
 }
 \description{
-Write a single data frame to an XLSX with openxlsx, applying formatting that fixes the default output: left/top cell alignment on the header row and the data, auto column widths capped at a readable maximum, text columns forced to text format (preserving leading zeros), dates shown as YYYY-MM-DD, an initial worksheet zoom, and a large default window size.
+Write one or more data frames to an XLSX with openxlsx, applying formatting that fixes the default output: left/top cell alignment on the header row and the data, auto column widths capped at a readable maximum, text columns forced to text format (preserving leading zeros), dates shown as YYYY-MM-DD, an initial worksheet zoom, and a large default window size. A named list of data frames is written as one styled worksheet per element.
 }
 \details{
 Character columns are given Excel's text number format ("@") so values like
@@ -70,5 +70,9 @@ write_xlsx_pretty(mtcars, "mtcars.xlsx", rownames_col = "model")
 # A column mixing numeric percentages with text
 df <- data.frame(id = 1:2, Chemo_Response = c("0.9", "<90\%"))
 write_xlsx_pretty(df, "response.xlsx", pct_cols = "Chemo_Response")
+
+# a named list writes one worksheet per element
+sheets <- list(cars = mtcars, flowers = iris)
+write_xlsx_pretty(sheets, "two_sheets.xlsx")
 }
 }

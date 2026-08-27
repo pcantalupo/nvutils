@@ -72,12 +72,12 @@ write_pretty_sheet <- function(wb, sheet, df, zoom, pct_cols, max_col_width,
 }
 
 #' @title Write a data frame to a nicely-formatted XLSX (Excel)
-#' @description Write a single data frame to an XLSX with openxlsx, applying formatting that fixes the default output: left/top cell alignment on the header row and the data, auto column widths capped at a readable maximum, text columns forced to text format (preserving leading zeros), dates shown as YYYY-MM-DD, an initial worksheet zoom, and a large default window size.
-#' @param df A data frame to write.
+#' @description Write one or more data frames to an XLSX with openxlsx, applying formatting that fixes the default output: left/top cell alignment on the header row and the data, auto column widths capped at a readable maximum, text columns forced to text format (preserving leading zeros), dates shown as YYYY-MM-DD, an initial worksheet zoom, and a large default window size. A named list of data frames is written as one styled worksheet per element.
+#' @param df A data frame, or a named list of data frames. For a list, each element becomes a worksheet named by its list name and the same styling is applied to every sheet. The list must be named, with no duplicate names.
 #' @param path Output XLSX file path.
-#' @param sheet Worksheet name. Default "Sheet 1".
+#' @param sheet Worksheet name, used only when `df` is a single data frame. Ignored for a list, whose worksheet names come from the list names. Default "Sheet 1".
 #' @param zoom Initial worksheet zoom percentage. Default 170.
-#' @param rownames_col If non-NULL, the data frame's row names are moved into a new first column with this name (via tibble::rownames_to_column). Default NULL.
+#' @param rownames_col If non-NULL, the data frame's row names are moved into a new first column with this name (via tibble::rownames_to_column). Not supported when `df` is a list; call tibble::rownames_to_column() on each element before building the list. Default NULL.
 #' @param window_width Excel workbook window width. Default 45000.
 #' @param window_height Excel workbook window height. Default 30000.
 #' @param pct_cols Character vector of column names holding mixed values where purely-numeric entries should be written as numbers with the "0\%" number format (so Excel shows e.g. "90\%") while non-numeric text entries (e.g. "<90\%", "No preop chemo") are written with general format. Default character(0).
@@ -116,6 +116,10 @@ write_pretty_sheet <- function(wb, sheet, df, zoom, pct_cols, max_col_width,
 #' # A column mixing numeric percentages with text
 #' df <- data.frame(id = 1:2, Chemo_Response = c("0.9", "<90%"))
 #' write_xlsx_pretty(df, "response.xlsx", pct_cols = "Chemo_Response")
+#'
+#' # a named list writes one worksheet per element
+#' sheets <- list(cars = mtcars, flowers = iris)
+#' write_xlsx_pretty(sheets, "two_sheets.xlsx")
 #' }
 write_xlsx_pretty <- function(df, path, sheet = "Sheet 1", zoom = 170, rownames_col = NULL,
                               window_width = 45000, window_height = 30000,

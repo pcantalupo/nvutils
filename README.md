@@ -54,7 +54,7 @@ For `xlsx2tsv.R` and `tsv2xlsx.R`: required flag `-i/--input`; optional flags
 
 ## Nicely-formatted Excel output
 
-`write_xlsx_pretty()` writes a single data frame to an XLSX with `openxlsx`,
+`write_xlsx_pretty()` writes one or more data frames to an XLSX with `openxlsx`,
 fixing the default formatting: left/top cell alignment on the header row and
 the data, auto column widths, character columns forced to text format (so
 values like `001` keep their
@@ -70,12 +70,18 @@ write_xlsx_pretty(mtcars, "mtcars.xlsx", rownames_col = "model")
 ## 90% while "<90%" stays as text
 df <- data.frame(id = 1:2, Chemo_Response = c("0.9", "<90%"))
 write_xlsx_pretty(df, "response.xlsx", pct_cols = "Chemo_Response")
+
+## a named list writes one worksheet per element, each with the same styling
+write_xlsx_pretty(list(cars = mtcars, flowers = iris), "two_sheets.xlsx")
 ```
 
-Arguments: `df`, `path`, `sheet` (worksheet name), `zoom`, `rownames_col`
-(move row names into a first column), `window_width`, `window_height`,
-`pct_cols` (columns mixing numeric percentages with free text),
-`max_col_width` (default 100), and `wrap_text` (default `TRUE`).
+Arguments: `df` (a data frame, or a named list of data frames written as one
+worksheet per element, named by the list names), `path`, `sheet` (worksheet
+name, used only for a single data frame and ignored for a list), `zoom`,
+`rownames_col` (move row names into a first column; not supported for a list,
+since row names differ per data frame), `window_width`, `window_height`,
+`pct_cols` (columns mixing numeric percentages with free text, applied to
+every sheet), `max_col_width` (default 100), and `wrap_text` (default `TRUE`).
 `max_col_width` is in the same character units Excel shows in its right-click
 "Column Width" dialog: columns whose widest value exceeds it are pinned to it,
 narrower columns keep their auto-fitted width, and `NULL` disables the cap so
