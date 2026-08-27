@@ -121,12 +121,39 @@ write_xlsx_pretty <- function(df, path, sheet = "Sheet 1", zoom = 170, rownames_
                               window_width = 45000, window_height = 30000,
                               pct_cols = character(0), max_col_width = 100,
                               wrap_text = TRUE) {
-  if (!is.null(rownames_col)) {
-    df <- tibble::rownames_to_column(df, var = rownames_col)
+  # A data frame is also a list, so the data-frame case is tested first. Both
+  # paths end up as a named list of data frames, one element per worksheet.
+  if (is.data.frame(df)) {
+    if (!is.null(rownames_col)) {
+      df <- tibble::rownames_to_column(df, var = rownames_col)
+    }
+    sheets = list(df)
+    names(sheets) = sheet
+  } else if (is.list(df)) {
+    if (!is.null(rownames_col)) {
+      stop("rownames_col is not supported when df is a list of data frames; ",
+           "add the column first with tibble::rownames_to_column()")
+    }
+    sheet_names = names(df)
+    if (is.null(sheet_names) || any(is.na(sheet_names)) || any(sheet_names == "")) {
+      stop("df must be a named list of data frames; worksheet names come from the list names")
+    }
+    if (anyDuplicated(sheet_names) > 0) {
+      stop("df has duplicate list names: ",
+           paste(unique(sheet_names[duplicated(sheet_names)]), collapse = ", "))
+    }
+    sheets = df
+  } else {
+    stop("df must be a data frame or a named list of data frames")
   }
   wb <- openxlsx::createWorkbook()
-  write_pretty_sheet(wb, sheet, df, zoom = zoom, pct_cols = pct_cols,
-                     max_col_width = max_col_width, wrap_text = wrap_text)
+  # Indexed by position, not by name: sheets[[sheet_name]] would silently
+  # return only the first match if the duplicate-name check above were removed.
+  for (i in seq_along(sheets)) {
+    write_pretty_sheet(wb, names(sheets)[i], sheets[[i]], zoom = zoom,
+                       pct_cols = pct_cols, max_col_width = max_col_width,
+                       wrap_text = wrap_text)
+  }
   wb$workbook$bookViews <- sprintf(
     '<bookViews><workbookView xWindow="0" yWindow="0" windowWidth="%d" windowHeight="%d"/></bookViews>',
     window_width, window_height)

@@ -35,10 +35,11 @@ test_that("write_xlsx_pretty adds a row-names column when rownames_col is set", 
 
 # Column widths live in the sheet XML, not in anything read.xlsx() returns, so
 # these helpers unzip the workbook and pull the <col> width attributes.
-col_widths = function(path) {
+col_widths = function(path, sheet = 1) {
   unz_dir = withr::local_tempdir()
   utils::unzip(path, exdir = unz_dir)
-  xml = readLines(file.path(unz_dir, "xl", "worksheets", "sheet1.xml"),
+  xml = readLines(file.path(unz_dir, "xl", "worksheets",
+                            sprintf("sheet%d.xml", sheet)),
                   warn = FALSE)
   cols = regmatches(xml, regexpr("<cols>.*</cols>", xml))
   as.numeric(gsub('width="|"', "",
@@ -130,4 +131,78 @@ test_that("write_xlsx_pretty pct_cols writes numeric percentages as numbers and 
   result <- read.xlsx(testoutfile)
   expect_equal(as.numeric(result$Chemo_Response[1]), 0.9)
   expect_equal(result$Chemo_Response[2], "<90%")
+})
+
+test_that("write_xlsx_pretty writes one worksheet per element of a named list", {
+  testoutfile <- withr::local_file("write_xlsx_pretty_test.xlsx")
+
+  sheets <- list(first  = data.frame(id = c("001", "002"), stringsAsFactors = FALSE),
+                 second = data.frame(value = c(10, 20)))
+  write_xlsx_pretty(sheets, testoutfile)
+
+  expect_equal(openxlsx::getSheetNames(testoutfile), c("first", "second"))
+  expect_equal(read.xlsx(testoutfile, sheet = "first")$id, c("001", "002"))
+  expect_equal(read.xlsx(testoutfile, sheet = "second")$value, c(10, 20))
+})
+
+test_that("write_xlsx_pretty styles every sheet, not just the first", {
+  testoutfile <- withr::local_file("write_xlsx_pretty_test.xlsx")
+
+  # Content round-trips through openxlsx even with no styling at all, so a
+  # content-only assertion would pass for an implementation that styled the
+  # first sheet and plain-wrote the rest. Column widths discriminate: a bare
+  # write.xlsx() sets none, so a capped width on sheet 2 proves the styling
+  # pass ran there.
+  sheets <- list(first  = data.frame(a = "x", stringsAsFactors = FALSE),
+                 second = data.frame(long = strrep("long text ", 40),
+                                     stringsAsFactors = FALSE))
+  write_xlsx_pretty(sheets, testoutfile, max_col_width = 100)
+
+  # openxlsx adds 0.71 padding to the width it writes
+  expect_equal(col_widths(testoutfile, sheet = 2)[1], 100.71)
+})
+
+test_that("write_xlsx_pretty pct_cols applies per sheet and ignores sheets lacking the column", {
+  testoutfile <- withr::local_file("write_xlsx_pretty_test.xlsx")
+
+  # "0.90" on the untouched sheet, not "0.9": a mixed-type column comes back
+  # from read.xlsx() as character, and a leaked numeric 0.9 stringifies to
+  # "0.9". With "0.9" on both sheets the negative assertion below passes
+  # whether pct_cols leaked or not; the trailing zero is what makes it fail
+  # if it did.
+  sheets <- list(has_pct = data.frame(Chemo_Response = c("0.9", "<90%"),
+                                      stringsAsFactors = FALSE),
+                 no_pct  = data.frame(other = c("0.90", "<90%"),
+                                      stringsAsFactors = FALSE))
+  write_xlsx_pretty(sheets, testoutfile, pct_cols = "Chemo_Response")
+
+  # the named column is written as a number on the sheet that has it
+  first <- read.xlsx(testoutfile, sheet = "has_pct")
+  expect_equal(as.numeric(first$Chemo_Response[1]), 0.9)
+  expect_equal(first$Chemo_Response[2], "<90%")
+  # the other sheet's look-alike column is untouched and stays text
+  second <- read.xlsx(testoutfile, sheet = "no_pct")
+  expect_equal(second$other, c("0.90", "<90%"))
+})
+
+test_that("write_xlsx_pretty errors on an unnamed list", {
+  testoutfile <- withr::local_file("write_xlsx_pretty_test.xlsx")
+
+  sheets <- list(data.frame(a = 1), data.frame(b = 2))
+  expect_error(write_xlsx_pretty(sheets, testoutfile), "named list")
+})
+
+test_that("write_xlsx_pretty errors on duplicate list names", {
+  testoutfile <- withr::local_file("write_xlsx_pretty_test.xlsx")
+
+  sheets <- list(dup = data.frame(a = 1), dup = data.frame(b = 2))
+  expect_error(write_xlsx_pretty(sheets, testoutfile), "duplicate")
+})
+
+test_that("write_xlsx_pretty errors when rownames_col is given with a list", {
+  testoutfile <- withr::local_file("write_xlsx_pretty_test.xlsx")
+
+  sheets <- list(first = data.frame(a = 1))
+  expect_error(write_xlsx_pretty(sheets, testoutfile, rownames_col = "name"),
+               "rownames_col")
 })
