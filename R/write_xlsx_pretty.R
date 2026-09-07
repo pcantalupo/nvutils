@@ -72,7 +72,7 @@ write_pretty_sheet <- function(wb, sheet, df, zoom, pct_cols, max_col_width,
 }
 
 #' @title Write a data frame to a nicely-formatted XLSX (Excel)
-#' @description Write one or more data frames to an XLSX with openxlsx, applying formatting that fixes the default output: left/top cell alignment on the header row and the data, auto column widths capped at a readable maximum, text columns forced to text format (preserving leading zeros), dates shown as YYYY-MM-DD, an initial worksheet zoom, and a large default window size. A named list of data frames is written as one styled worksheet per element.
+#' @description Write one or more data frames to an XLSX with openxlsx, applying formatting that fixes the default output: left/top cell alignment on the header row and the data, auto column widths capped at a readable maximum, text columns forced to text format (so they stay text when edited in Excel), dates shown as YYYY-MM-DD, an initial worksheet zoom, and a large default window size. A named list of data frames is written as one styled worksheet per element.
 #' @param df A data frame, or a named list of data frames. For a list, each element becomes a worksheet named by its list name and the same styling is applied to every sheet. The list must be named, with no duplicate names.
 #' @param path Output XLSX file path.
 #' @param sheet Worksheet name, used only when `df` is a single data frame. Ignored for a list, whose worksheet names come from the list names. Default "Sheet 1".
@@ -85,9 +85,16 @@ write_pretty_sheet <- function(wb, sheet, df, zoom, pct_cols, max_col_width,
 #' @param wrap_text Wrap cell contents instead of letting a value longer than its column spill across neighbouring cells. Default TRUE.
 #'
 #' @details
-#' Character columns are given Excel's text number format ("@") so values like
-#' "001" are not silently converted to numbers. Columns inheriting from Date or
-#' POSIXct are formatted as YYYY-MM-DD.
+#' Character columns are given Excel's text number format ("@"). Applying that
+#' format does not change how the values are written, since openxlsx writes
+#' character columns as text either way. What the format does is keep the column
+#' text under hand-editing: typing "001" into such a cell in Excel leaves it as
+#' "001", where a general-format cell would turn it into 1. Excel flags
+#' numeric-looking text with its "Number stored as text" warning either way —
+#' with this function's text format, or with a plain openxlsx::write.xlsx() —
+#' because the warning follows the cell type, not the number format.
+#'
+#' Columns inheriting from Date or POSIXct are formatted as YYYY-MM-DD.
 #'
 #' The `pct_cols` argument handles columns that mix decimal values (e.g. 0.9,
 #' which Excel with the "0\%" format displays as "90\%") with free text (e.g.

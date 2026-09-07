@@ -56,9 +56,8 @@ For `xlsx2tsv.R` and `tsv2xlsx.R`: required flag `-i/--input`; optional flags
 
 `write_xlsx_pretty()` writes one or more data frames to an XLSX with `openxlsx`,
 fixing the default formatting: left/top cell alignment on the header row and
-the data, auto column widths, character columns forced to text format (so
-values like `001` keep their
-leading zeros), dates shown as `YYYY-MM-DD`, an initial worksheet zoom, and a
+the data, auto column widths, character columns forced to text format (so a
+value like `001` stays text when the sheet is hand-edited in Excel), dates shown as `YYYY-MM-DD`, an initial worksheet zoom, and a
 large default window size. Column widths are auto-fitted but capped, so a single
 long free-text column cannot stretch to an unreadable width.
 
@@ -67,7 +66,7 @@ library(nvutils)
 write_xlsx_pretty(mtcars, "mtcars.xlsx", rownames_col = "model")
 
 ## a column mixing numeric percentages with text: 0.9 is written as the number
-## 90% while "<90%" stays as text
+## 0.9 with a percent format, so Excel displays 90%, while "<90%" stays text
 df <- data.frame(id = 1:2, Chemo_Response = c("0.9", "<90%"))
 write_xlsx_pretty(df, "response.xlsx", pct_cols = "Chemo_Response")
 
@@ -124,10 +123,11 @@ into the output workbook under its original name. Pass `--sheet` to read only
 that one worksheet, whose name is likewise carried into the output.
 
 By default, `.tsv`/`.txt` inputs are read with every column as text, which
-preserves leading zeros (e.g. ID `001`) but stores numeric columns as text in
-the resulting workbook. Pass `--infer_types` to let `fread` infer column types
-so numeric columns are written as real numbers; note that leading zeros in
-ID-like columns may then be lost.
+preserves leading zeros (e.g. ID `001`). Every column therefore reaches the
+workbook as text, including columns whose values are all numbers — Excel flags
+those with its "Number stored as text" warning. Pass `--infer_types` to let
+`fread` infer column types so number-valued columns are written as real
+numbers; note that leading zeros in ID-like columns may then be lost.
 
 ## Two-category bar plot
 
