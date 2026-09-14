@@ -28,3 +28,13 @@ test_that("waldo_compare_files reports no differences for identical xlsx sheets"
   capture.output(result <- waldo_compare_files(file1, file2))
   expect_length(result, 0)
 })
+
+test_that("waldo_compare_files keeps spaces in xlsx column names", {
+  file1 = withr::local_file("space_colname.xlsx")
+  file2 = withr::local_file("dot_colname.xlsx")
+  openxlsx::write.xlsx(data.frame(`with space` = 1, check.names = FALSE), file = file1)
+  openxlsx::write.xlsx(data.frame(with.space = 1), file = file2)
+
+  capture.output(result <- waldo_compare_files(file1, file2))
+  expect_match(paste(result, collapse = "\n"), '"with space"')
+})

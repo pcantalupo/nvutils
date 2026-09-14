@@ -253,3 +253,26 @@ test_that("write_xlsx_pretty errors when rownames_col is given with a list", {
   expect_error(write_xlsx_pretty(sheets, testoutfile, rownames_col = "name"),
                "rownames_col")
 })
+
+# The header is checked in the sheet XML because a read.xlsx() round-trip
+# rewrites "with space" as "with.space" on the way back in and hides the bug.
+test_that("write_xlsx_pretty.R keeps spaces in xlsx column names", {
+  infile = withr::local_file("space_in.xlsx")
+  outfile = withr::local_file("space_out.xlsx")
+  openxlsx::write.xlsx(data.frame(`with space` = 1, check.names = FALSE), file = infile)
+  script = system.file("scripts", "write_xlsx_pretty.R", package = "nvutils")
+
+  # all-sheets read and --sheet read are separate read.xlsx() calls
+  for (sheet_args in list(character(0), c("--sheet", "1"))) {
+    status = system2(file.path(R.home("bin"), "Rscript"),
+                     c(script, "--input", infile, "--output", outfile, sheet_args),
+                     stdout = FALSE, stderr = FALSE)
+    expect_equal(status, 0)
+
+    unz_dir = withr::local_tempdir()
+    utils::unzip(outfile, exdir = unz_dir)
+    sst = paste(readLines(file.path(unz_dir, "xl", "sharedStrings.xml"), warn = FALSE),
+                collapse = "")
+    expect_match(sst, ">with space<")
+  }
+})

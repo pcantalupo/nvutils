@@ -52,6 +52,29 @@ For `xlsx2tsv.R` and `tsv2xlsx.R`: required flag `-i/--input`; optional flags
 `--sheet`, which accepts either a sheet number or a sheet name (default `1`).
 `waldocompare.R` requires both `--file1` and `--file2`.
 
+## Column names in xlsx input
+
+Every nvutils function and CLI script that reads an `.xlsx` file uses `openxlsx::read.xlsx()`. By default `read.xlsx()` replaces spaces in column names with dots (`sep.names = "."`), so a header `sample id` is read as `sample.id`. nvutils reads with `sep.names = " "` instead, so a single space in a header is kept.
+
+`read.xlsx()` cleans every header name before applying `sep.names`, whatever its value: leading and trailing whitespace is trimmed, and each run of whitespace (several spaces, or a tab) becomes one `sep.names` character. No `sep.names` value keeps a header exactly as it is written in Excel.
+
+| Header in Excel | `read.xlsx()` default | nvutils (`sep.names = " "`) |
+|---|---|---|
+| `sample id` | `sample.id` | `sample id` |
+| `sample  id` (two spaces) | `sample.id` | `sample id` |
+| `sample<TAB>id` | `sample.id` | `sample id` |
+| `" sample id "` (leading/trailing space) | `sample.id` | `sample id` |
+| `sample.id` | `sample.id` | `sample.id` |
+
+Where this applies:
+
+- `xlsx2tsv()` has a `sep.names` argument, default `" "`. `xlsx2tsv.R` uses the default and has no flag to change it.
+- `waldo_compare_files()` has a `sep.names` argument, default `" "`, applied to both files. `waldocompare.R` uses the default and has no flag to change it. Both files go through the same cleaning, so the comparison cannot see header differences that the cleaning removes, such as `sample  id` vs `sample id` or a trailing space. With `sep.names = "."` it also cannot tell `sample id` from `sample.id`.
+- `write_xlsx_pretty.R` with an `.xlsx` input writes the cleaned header names to the output workbook, so a header with a run of whitespace or leading/trailing whitespace comes out changed. `--pct_cols` must use the cleaned names. The `write_xlsx_pretty()` function itself writes the column names of the data frame it is given unchanged.
+- `two_category_barplot.R` with an `.xlsx` input matches `--category` and `--subcategory` against the cleaned names. Pass a name with spaces as it appears in Excel, e.g. `-c "sample id"`, not `-c sample.id`.
+
+For `.tsv`/`.txt` inputs, `data.table::fread()` (used by `write_xlsx_pretty.R` and `two_category_barplot.R`) and `readr::read_tsv()` (used by `waldo_compare_files()`) keep spaces inside a column name, including runs of spaces, but trim leading and trailing whitespace.
+
 ## Nicely-formatted Excel output
 
 `write_xlsx_pretty()` writes one or more data frames to an XLSX with `openxlsx`,

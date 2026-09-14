@@ -6,6 +6,10 @@
 #' @param file1 Filename for the first file
 #' @param file2 Filename for the second file
 #' @param max_diffs Maximum no. differences that are reported
+#' @param sep.names For xlsx files, the character that replaces blanks in
+#' column names (passed to openxlsx::read.xlsx). Defaults to a space so column
+#' names keep their spaces; read.xlsx still trims and collapses runs of
+#' whitespace. Set to "." for the read.xlsx default.
 #' @param ... Additional params passed to compare()
 #'
 #' @return The result of waldo::compare()
@@ -20,7 +24,7 @@
 #' \dontrun{
 #' waldo_compare_files("foo.txt", "foo.txt")
 #' }
-waldo_compare_files = function(file1, file2, max_diffs = Inf, ...) {
+waldo_compare_files = function(file1, file2, max_diffs = Inf, sep.names = " ", ...) {
   if (missing(file1) || missing(file2)) {
     stop("file1 and file2 params are required")
   }
@@ -42,7 +46,9 @@ waldo_compare_files = function(file1, file2, max_diffs = Inf, ...) {
       sheets = getSheetNames(file)
       # simplify = FALSE keeps a named list of data frames; sapply would
       # otherwise collapse sheets sharing a column count into a list-matrix
-      objects[[file]] = sapply(sheets, function(s) read.xlsx(file, sheet = s),
+      objects[[file]] = sapply(sheets,
+                               function(s) read.xlsx(file, sheet = s,
+                                                     sep.names = sep.names),
                                simplify = FALSE)
     } else {
       stop("File extension, ", ext, ", not supported")

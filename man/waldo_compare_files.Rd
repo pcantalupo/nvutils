@@ -4,7 +4,7 @@
 \alias{waldo_compare_files}
 \title{Compare two files}
 \usage{
-waldo_compare_files(file1, file2, max_diffs = Inf, ...)
+waldo_compare_files(file1, file2, max_diffs = Inf, sep.names = " ", ...)
 }
 \arguments{
 \item{file1}{Filename for the first file}
@@ -12,6 +12,11 @@ waldo_compare_files(file1, file2, max_diffs = Inf, ...)
 \item{file2}{Filename for the second file}
 
 \item{max_diffs}{Maximum no. differences that are reported}
+
+\item{sep.names}{For xlsx files, the character that replaces blanks in
+column names (passed to openxlsx::read.xlsx). Defaults to a space so column
+names keep their spaces; read.xlsx still trims and collapses runs of
+whitespace. Set to "." for the read.xlsx default.}
 
 \item{...}{Additional params passed to compare()}
 }

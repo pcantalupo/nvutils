@@ -80,7 +80,10 @@ palette <- switch(opt$colors,
 # Read input by extension
 ext <- tolower(tools::file_ext(opt$input))
 if (ext == "xlsx") {
-  data <- openxlsx::read.xlsx(opt$input, sheet = opt$sheet)
+  # sep.names = " " keeps spaces in column names, so --category and
+  # --subcategory match the header as it appears in Excel (and as fread
+  # reads it for tsv input) instead of its dotted read.xlsx form.
+  data <- openxlsx::read.xlsx(opt$input, sheet = opt$sheet, sep.names = " ")
 } else if (ext %in% c("tsv", "txt", "")) {
   data <- data.table::fread(opt$input, data.table = FALSE)
 } else {

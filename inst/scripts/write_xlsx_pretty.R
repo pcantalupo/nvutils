@@ -69,10 +69,14 @@ ext = tolower(tools::file_ext(opt$input))
 sheet_name = "Sheet 1"
 if (ext == "xlsx") {
   sheets = openxlsx::getSheetNames(opt$input)
+  # read.xlsx() defaults to sep.names = ".", which rewrites "with space" as
+  # "with.space" in the output header. " " keeps single spaces; openxlsx still
+  # trims and collapses runs of whitespace in header names regardless.
   if (is.null(opt$sheet)) {
     # No --sheet: read every worksheet so all of them get prettified.
     data = lapply(seq_along(sheets),
-                  function(i) openxlsx::read.xlsx(opt$input, sheet = i))
+                  function(i) openxlsx::read.xlsx(opt$input, sheet = i,
+                                                  sep.names = " "))
     names(data) = sheets
   } else {
     # --sheet arrives as a string. read.xlsx() reads by position for a number
@@ -84,7 +88,7 @@ if (ext == "xlsx") {
     } else {
       sheet_arg = opt$sheet
     }
-    data = openxlsx::read.xlsx(opt$input, sheet = sheet_arg)
+    data = openxlsx::read.xlsx(opt$input, sheet = sheet_arg, sep.names = " ")
     if (is.character(sheet_arg)) {
       sheet_name = sheet_arg
     } else {
