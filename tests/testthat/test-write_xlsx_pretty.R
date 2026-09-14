@@ -11,16 +11,6 @@ test_that("write_xlsx_pretty writes the excel file and round-trips data", {
   expect_equal(result$value, c(10, 20))
 })
 
-test_that("write_xlsx_pretty preserves leading zeros in character columns", {
-  testoutfile <- withr::local_file("write_xlsx_pretty_test.xlsx")
-
-  df <- data.frame(id = c("001", "002"), stringsAsFactors = FALSE)
-  write_xlsx_pretty(df, testoutfile)
-
-  result <- read.xlsx(testoutfile)
-  expect_equal(result$id, c("001", "002"))
-})
-
 test_that("write_xlsx_pretty adds a row-names column when rownames_col is set", {
   testoutfile <- withr::local_file("write_xlsx_pretty_test.xlsx")
 
@@ -53,6 +43,63 @@ has_wrap_text = function(path) {
                  collapse = "")
   grepl("wrapText", styles)
 }
+
+# Cells whose style uses the number format with this formatCode. openxlsx
+# allocates custom numFmt ids from 165 up, so the id is resolved from the
+# formatCode rather than hardcoded. A cell's s= attribute is a 0-based index
+# into cellXfs.
+cells_with_numfmt = function(path, format_code, sheet = 1) {
+  unz_dir = withr::local_tempdir()
+  utils::unzip(path, exdir = unz_dir)
+  styles = paste(readLines(file.path(unz_dir, "xl", "styles.xml"), warn = FALSE),
+                 collapse = "")
+  numfmts = regmatches(styles, gregexpr("<numFmt [^>]*/>", styles))[[1]]
+  fmt = numfmts[grepl(sprintf('formatCode="%s"', format_code), numfmts,
+                      fixed = TRUE)]
+  if (length(fmt) == 0) {
+    return(character(0))
+  }
+  fmt_ids = gsub('.*numFmtId="([0-9]+)".*', "\\1", fmt)
+
+  cellxfs = regmatches(styles, regexpr("<cellXfs.*?</cellXfs>", styles))
+  xfs = strsplit(cellxfs, "<xf ")[[1]][-1]
+  xf_ids = which(grepl(sprintf('numFmtId="(%s)"', paste(fmt_ids, collapse = "|")),
+                       xfs)) - 1L
+
+  sheet_xml = paste(readLines(file.path(unz_dir, "xl", "worksheets",
+                                        sprintf("sheet%d.xml", sheet)),
+                              warn = FALSE), collapse = "")
+  cells = regmatches(sheet_xml, gregexpr("<c [^>]*>", sheet_xml))[[1]]
+  hit = grepl(sprintf(' s="(%s)"', paste(xf_ids, collapse = "|")), cells)
+  gsub('.*r="([A-Z]+[0-9]+)".*', "\\1", cells[hit])
+}
+
+test_that("write_xlsx_pretty gives character data cells Excel's text format", {
+  testoutfile = withr::local_file("write_xlsx_pretty_test.xlsx")
+
+  # Excel converts these if they are retyped into a General cell: 007 becomes
+  # 7 and 1-2 becomes a date. A read.xlsx() round-trip cannot see the text
+  # format, because openxlsx writes character columns as string cells either
+  # way, so the test asserts on the attached number format.
+  df = data.frame(id = c("007", "1-2", "86-87"), value = c(10, 20, 30),
+                  stringsAsFactors = FALSE)
+  write_xlsx_pretty(df, testoutfile)
+
+  # data rows of the character column only: not the header, not the numeric
+  expect_equal(cells_with_numfmt(testoutfile, "@"), c("A2", "A3", "A4"))
+})
+
+test_that("write_xlsx_pretty formats Date and POSIXct columns as YYYY-MM-DD", {
+  testoutfile = withr::local_file("write_xlsx_pretty_test.xlsx")
+
+  df = data.frame(day = as.Date(c("2014-12-16", "2020-02-11")),
+                  time = as.POSIXct(c("2014-12-16 10:00:00",
+                                      "2020-02-11 11:00:00"), tz = "UTC"))
+  write_xlsx_pretty(df, testoutfile)
+
+  expect_equal(cells_with_numfmt(testoutfile, "YYYY-MM-DD"),
+               c("A2", "B2", "A3", "B3"))
+})
 
 test_that("write_xlsx_pretty wraps cell contents by default", {
   testoutfile <- withr::local_file("write_xlsx_pretty_test.xlsx")
