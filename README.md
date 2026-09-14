@@ -61,6 +61,8 @@ value like `001` stays text when the sheet is hand-edited in Excel), dates shown
 large default window size. Column widths are auto-fitted but capped, so a single
 long free-text column cannot stretch to an unreadable width.
 
+Set your column types before writing. If Excel shows a "Number stored as text" warning on a column, that column holds numbers but is stored as text in your data frame. Apart from `pct_cols`, this function does not change column types, so convert that column to numbers first and the warning goes away. Leave columns that are meant to be text, such as IDs with leading zeros, as they are.
+
 ``` r
 library(nvutils)
 write_xlsx_pretty(mtcars, "mtcars.xlsx", rownames_col = "model")
