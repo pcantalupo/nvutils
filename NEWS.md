@@ -1,3 +1,9 @@
+# nvutils 1.2.1
+
+* tell users to set column types before write_xlsx_pretty()
+* assert write_xlsx_pretty number formats in the sheet XML
+* correct what the "@" text format actually does
+
 # nvutils 1.2.0
 
 * `write_xlsx_pretty()` accepts a named list of data frames in `df`, writing one
