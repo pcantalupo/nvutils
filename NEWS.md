@@ -1,3 +1,7 @@
+# nvutils 1.2.2
+
+* keep spaces in xlsx column names when reading
+
 # nvutils 1.2.1
 
 * tell users to set column types before write_xlsx_pretty()
