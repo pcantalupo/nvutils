@@ -18,10 +18,13 @@ two_category_barplot(
 \item{data}{A data frame containing the variables to plot}
 
 \item{category}{Character string specifying the column name for the main
-category (x-axis). Will be converted to a factor if not already.}
+category (x-axis). Will be converted to a factor if not already. A
+character column is ordered naturally with \code{gtools::mixedsort()}, so
+"c2" comes before "c10". A factor keeps its level order.}
 
 \item{subcategory}{Character string specifying the column name for the
-subcategory (fill variable). Will be converted to a factor if not already.}
+subcategory (fill variable). Will be converted to a factor if not already,
+ordered the same way as \code{category}. NA values are drawn grey50.}
 
 \item{title}{Character string for the plot title. Default is
 "Percent stacked barchart".}

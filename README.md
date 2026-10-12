@@ -191,6 +191,8 @@ Arguments: `data` (data frame), `category` (x-axis column), `subcategory`
 to the exported `colors_ditto`; pass any color vector, e.g. `colors_polychrome`), and `match` (`"position"` (default): the nth level in the plot gets the nth color; `"name"`: colors are assigned over the full subcategory level set, unused factor levels included, so a level keeps one color across runs and subsets).
 Returns a ggplot2 object.
 
+Character columns are ordered naturally, so `c2` comes before `c10`. A factor column keeps its level order. NA values in `subcategory` are drawn grey.
+
 ### Command-line usage
 
 `inst/scripts/two_category_barplot.R` wraps the function as a CLI tool that

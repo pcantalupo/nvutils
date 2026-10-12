@@ -6,9 +6,12 @@
 #'
 #' @param data A data frame containing the variables to plot
 #' @param category Character string specifying the column name for the main
-#'   category (x-axis). Will be converted to a factor if not already.
+#'   category (x-axis). Will be converted to a factor if not already. A
+#'   character column is ordered naturally with \code{gtools::mixedsort()}, so
+#'   "c2" comes before "c10". A factor keeps its level order.
 #' @param subcategory Character string specifying the column name for the
-#'   subcategory (fill variable). Will be converted to a factor if not already.
+#'   subcategory (fill variable). Will be converted to a factor if not already,
+#'   ordered the same way as \code{category}. NA values are drawn grey50.
 #' @param title Character string for the plot title. Default is
 #'   "Percent stacked barchart".
 #' @param legend_title Character string for the legend title. If NULL (default),
@@ -35,7 +38,7 @@
 #' the dittoSeq color palette, which is designed for accessibility and
 #' consistency with single-cell visualization tools.
 #'
-#' @importFrom dplyr mutate %>%
+#' @importFrom dplyr mutate across all_of %>%
 #' @importFrom ggplot2 ggplot aes geom_bar position_fill scale_fill_manual
 #'   scale_y_continuous labs theme_classic theme element_text
 #' @importFrom rlang .data :=
@@ -98,10 +101,18 @@ two_category_barplot <- function(data, category, subcategory,
     }
   }
 
-  # Factor conversion with explicit handling of existing factors
+  # Convert both columns to factors, read from the inside out:
+  # 1. .x[!is.na(.x)]: the non-missing values
+  # 2. unique(...): each value once
+  # 3. gtools::mixedsort(...): natural order, so "c2" comes before "c10"
+  # 4. factor(.x, levels = ...): a character column gets that natural order.
+  #    It is the same order match = "name" uses for colors.
+  # Other columns use factor(.x): a factor keeps its level order, and numbers
+  # sort by value.
+  # factor() drops unused levels. NA stays missing and is drawn grey50.
   data <- data %>%
-    mutate({{category}} := factor(.data[[category]]),
-           {{subcategory}} := factor(.data[[subcategory]]))
+    mutate(across(all_of(c(category, subcategory)),
+                  ~ if (is.character(.x)) factor(.x, levels = gtools::mixedsort(unique(.x[!is.na(.x)]))) else factor(.x)))
 
   if (match == "name") {
     palette = rep(colors, length.out = length(all_levels))
