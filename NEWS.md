@@ -1,3 +1,7 @@
+# nvutils 1.3.1
+
+* sort character columns naturally in two_category_barplot()
+
 # nvutils 1.3.0
 
 * add palette and match options to two_category_barplot
