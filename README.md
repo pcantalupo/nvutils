@@ -187,8 +187,8 @@ two_category_barplot(mtcars,
 <img src="man/figures/README-two-category-polychrome.png" width="480" />
 
 Arguments: `data` (data frame), `category` (x-axis column), `subcategory`
-(fill column), `title`, `legend_title`, and `colors` (fill palette, defaults
-to the exported `colors_ditto`; pass any color vector, e.g. `colors_polychrome`).
+(fill column), `title`, `legend_title`, `colors` (fill palette, defaults
+to the exported `colors_ditto`; pass any color vector, e.g. `colors_polychrome`), and `match` (`"position"` (default): the nth level in the plot gets the nth color; `"name"`: colors are assigned over the full subcategory level set, unused factor levels included, so a level keeps one color across runs and subsets).
 Returns a ggplot2 object.
 
 ### Command-line usage
@@ -202,12 +202,12 @@ two_category_barplot.R -i data.tsv -c cyl -s gear -o plot.png
 
 ## with the polychrome palette and a custom title
 two_category_barplot.R -i data.tsv -c cyl -s gear -o plot.png \
-  --colors polychrome -t "Gear Distribution by Cylinder Count"
+  --palette polychrome -t "Gear Distribution by Cylinder Count"
 ```
 
 Required flags: `-i/--input`, `-c/--category`, `-s/--subcategory`. Optional
 flags: `-o/--output` (defaults to the input basename + `.png`), `-t/--title`,
-`-l/--legend-title`, `--colors` (`ditto` (default) or `polychrome`), `--theme`
+`-l/--legend-title`, `--palette` (`ditto` (default), `polychrome`, or `sccustomize`, which matches `DimPlot_scCustom` and needs the scCustomize package), `--match` (`position` (default) or `name`; see `match` above), `--theme`
 (ggplot2 theme; `grey` is the ggplot2 default, script default is `classic`),
 `--rotatex_angle` (x-label rotation, default 45), `--sheet` (xlsx sheet, default
 1), `--width`/`--height` (inches, default 7x7), and `--dpi` (default 300).

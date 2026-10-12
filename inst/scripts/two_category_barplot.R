@@ -18,9 +18,16 @@ option_list <- list(
               help = "Plot title [default: %default]"),
   make_option(c("-l", "--legend-title"), type = "character", default = NULL,
               help = "Legend title [default: subcategory name]"),
-  make_option("--colors", type = "character", default = "ditto",
-              help = paste("Fill palette: ditto (colorblind-safe) or polychrome",
-                           "(maximum visual separation) [default: %default]")),
+  make_option("--palette", type = "character", default = "ditto",
+              help = paste("Fill palette: ditto (colors_ditto, 40 colors),",
+                           "polychrome (colors_polychrome, 25 colors) or",
+                           "sccustomize (matches DimPlot_scCustom; needs the",
+                           "scCustomize package) [default: %default]")),
+  make_option("--match", type = "character", default = "position",
+              help = paste("How --palette colors are assigned to subcategory",
+                           "levels: position (nth level in the plot gets the",
+                           "nth color) or name (each level keeps one color",
+                           "across runs and subsets) [default: %default]")),
   make_option("--theme", type = "character", default = "classic",
               help = paste("Base ggplot2 theme: grey (the ggplot2 default), gray,",
                            "bw, classic, minimal, light, dark, linedraw, void",
@@ -63,19 +70,17 @@ if (!opt$theme %in% valid_themes) {
   stop("unknown theme '", opt$theme, "'; choose one of: ",
        paste(valid_themes, collapse = ", "))
 }
-valid_palettes <- c("ditto", "polychrome")
-if (!opt$colors %in% valid_palettes) {
-  stop("unknown palette '", opt$colors, "'; choose one of: ",
+valid_palettes <- c("ditto", "polychrome", "sccustomize")
+if (!opt$palette %in% valid_palettes) {
+  stop("unknown palette '", opt$palette, "'; choose one of: ",
        paste(valid_palettes, collapse = ", "))
+}
+if (!opt$match %in% c("position", "name")) {
+  stop("unknown match '", opt$match, "'; choose one of: position, name")
 }
 
 # Load the heavy package only after args validate
 pacman::p_load('nvutils')
-
-# Resolve the palette name to the exported color vector
-palette <- switch(opt$colors,
-                  ditto = colors_ditto,
-                  polychrome = colors_polychrome)
 
 # Read input by extension
 ext <- tolower(tools::file_ext(opt$input))
@@ -96,13 +101,31 @@ if (is.null(output)) {
   output <- paste0(tools::file_path_sans_ext(opt$input), ".png")
 }
 
+# Resolve the palette name to a color vector. scCustomize_Palette() is sized
+# to the distinct non-NA subcategory values. File input has no factors, so
+# this is both the level set in the plot and the full level set used by
+# --match name.
+if (!opt$subcategory %in% names(data)) {
+  stop("subcategory not found in data: ", opt$subcategory)
+}
+if (opt$palette == "sccustomize") {
+  pacman::p_load('scCustomize')
+  n_levels = nlevels(factor(data[[opt$subcategory]]))
+  palette = scCustomize_Palette(num_groups = n_levels, ggplot_default_colors = FALSE)
+} else if (opt$palette == "polychrome") {
+  palette = colors_polychrome
+} else {
+  palette = colors_ditto
+}
+
 # Create the plot
 p <- two_category_barplot(data,
                           category = opt$category,
                           subcategory = opt$subcategory,
                           title = opt$title,
                           legend_title = opt[["legend-title"]],
-                          colors = palette)
+                          colors = palette,
+                          match = opt$match)
 
 # Apply base theme (when not classic) and x-label rotation. A complete theme
 # replaces everything before it, so re-apply the rotation afterwards. The

@@ -17,6 +17,14 @@
 #'   Defaults to \code{colors_ditto}, the exported 40-color dittoSeq/Okabe-Ito
 #'   palette. The palette is recycled three times to provide headroom for many
 #'   subcategory levels. Any color vector works, e.g. \code{colors_polychrome}.
+#' @param match How \code{colors} are assigned to subcategory levels.
+#'   \code{"position"} (default): the nth level in the plot gets the nth color,
+#'   so a level shifts color when an earlier level is absent from the data.
+#'   \code{"name"}: colors are assigned over the full level set of the
+#'   subcategory (factor levels including unused ones, else a natural sort of
+#'   the values with \code{gtools::mixedsort()}) and matched by level name, so
+#'   a level keeps one color across runs and subsets. Any names on
+#'   \code{colors} are replaced.
 #'
 #' @return A ggplot2 object representing the stacked bar chart
 #'
@@ -71,18 +79,37 @@
 two_category_barplot <- function(data, category, subcategory,
                                  title = "Percent stacked barchart",
                                  legend_title = NULL,
-                                 colors = colors_ditto) {
+                                 colors = colors_ditto,
+                                 match = c("position", "name")) {
+  match = match.arg(match)
+
   # Input validation
   if (!category %in% names(data)) stop("category not found in data")
   if (!subcategory %in% names(data)) stop("subcategory not found in data")
+
+  # Full subcategory level set (unused factor levels included), read before
+  # factor() drops unused levels. match = "name" assigns colors over this set.
+  if (match == "name") {
+    x = data[[subcategory]]
+    if (is.factor(x)) {
+      all_levels = levels(x)
+    } else {
+      all_levels = gtools::mixedsort(unique(as.character(x[!is.na(x)])))
+    }
+  }
 
   # Factor conversion with explicit handling of existing factors
   data <- data %>%
     mutate({{category}} := factor(.data[[category]]),
            {{subcategory}} := factor(.data[[subcategory]]))
 
-  # Recycle the palette to provide headroom for many subcategory levels
-  palette <- rep(colors, 3)
+  if (match == "name") {
+    palette = rep(colors, length.out = length(all_levels))
+    names(palette) = all_levels
+  } else {
+    # Recycle the palette to provide headroom for many subcategory levels
+    palette <- rep(colors, 3)
+  }
 
   p <- data %>%
     ggplot(aes(x = .data[[category]], fill = .data[[subcategory]])) +

@@ -10,7 +10,8 @@ two_category_barplot(
   subcategory,
   title = "Percent stacked barchart",
   legend_title = NULL,
-  colors = colors_ditto
+  colors = colors_ditto,
+  match = c("position", "name")
 )
 }
 \arguments{
@@ -32,6 +33,15 @@ uses the subcategory variable name.}
 Defaults to \code{colors_ditto}, the exported 40-color dittoSeq/Okabe-Ito
 palette. The palette is recycled three times to provide headroom for many
 subcategory levels. Any color vector works, e.g. \code{colors_polychrome}.}
+
+\item{match}{How \code{colors} are assigned to subcategory levels.
+\code{"position"} (default): the nth level in the plot gets the nth color,
+so a level shifts color when an earlier level is absent from the data.
+\code{"name"}: colors are assigned over the full level set of the
+subcategory (factor levels including unused ones, else a natural sort of
+the values with \code{gtools::mixedsort()}) and matched by level name, so
+a level keeps one color across runs and subsets. Any names on
+\code{colors} are replaced.}
 }
 \value{
 A ggplot2 object representing the stacked bar chart
