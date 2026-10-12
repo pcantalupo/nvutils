@@ -1,3 +1,7 @@
+# nvutils 1.3.0
+
+* add palette and match options to two_category_barplot
+
 # nvutils 1.2.2
 
 * keep spaces in xlsx column names when reading
