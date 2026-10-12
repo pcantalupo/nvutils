@@ -1,6 +1,7 @@
 # nvutils 1.3.1
 
 * sort character columns naturally in two_category_barplot()
+* repeat the palette for any number of levels in two_category_barplot()
 
 # nvutils 1.3.0
 

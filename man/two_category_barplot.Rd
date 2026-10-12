@@ -34,8 +34,8 @@ uses the subcategory variable name.}
 
 \item{colors}{A character vector of hex color codes for the fill scale.
 Defaults to \code{colors_ditto}, the exported 40-color dittoSeq/Okabe-Ito
-palette. The palette is recycled three times to provide headroom for many
-subcategory levels. Any color vector works, e.g. \code{colors_polychrome}.}
+palette. The palette repeats when there are more subcategory levels than
+colors. Any color vector works, e.g. \code{colors_polychrome}.}
 
 \item{match}{How \code{colors} are assigned to subcategory levels.
 \code{"position"} (default): the nth level in the plot gets the nth color,

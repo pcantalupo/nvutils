@@ -18,8 +18,8 @@
 #'   uses the subcategory variable name.
 #' @param colors A character vector of hex color codes for the fill scale.
 #'   Defaults to \code{colors_ditto}, the exported 40-color dittoSeq/Okabe-Ito
-#'   palette. The palette is recycled three times to provide headroom for many
-#'   subcategory levels. Any color vector works, e.g. \code{colors_polychrome}.
+#'   palette. The palette repeats when there are more subcategory levels than
+#'   colors. Any color vector works, e.g. \code{colors_polychrome}.
 #' @param match How \code{colors} are assigned to subcategory levels.
 #'   \code{"position"} (default): the nth level in the plot gets the nth color,
 #'   so a level shifts color when an earlier level is absent from the data.
@@ -118,8 +118,9 @@ two_category_barplot <- function(data, category, subcategory,
     palette = rep(colors, length.out = length(all_levels))
     names(palette) = all_levels
   } else {
-    # Recycle the palette to provide headroom for many subcategory levels
-    palette <- rep(colors, 3)
+    # One color per level in the plot, repeating the palette when there are
+    # more levels than colors
+    palette <- rep(colors, length.out = nlevels(data[[subcategory]]))
   }
 
   p <- data %>%

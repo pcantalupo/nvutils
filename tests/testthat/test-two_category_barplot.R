@@ -71,6 +71,13 @@ test_that("character columns are ordered naturally, so name and position agree",
   expect_equal(ld$fill[order(ld$group)], colors_ditto[1:3])
 })
 
+test_that("match = 'position' repeats the palette for more levels than colors", {
+  # 76 levels with the 25-color polychrome palette (more than 3 x 25)
+  df = data.frame(sample = "s1", celltype = paste0("L", 1:76))
+  ld = ggplot2::layer_data(two_category_barplot(df, "sample", "celltype", colors = colors_polychrome))
+  expect_equal(ld$fill[order(ld$group)], rep(colors_polychrome, length.out = 76))
+})
+
 test_that("NA subcategory values are drawn grey50", {
   df = data.frame(sample = "s1", celltype = c("a", NA, "b"))
 
