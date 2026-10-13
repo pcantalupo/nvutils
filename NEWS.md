@@ -1,3 +1,7 @@
+# nvutils 1.3.2
+
+* use a named palette as given in two_category_barplot() position mode
+
 # nvutils 1.3.1
 
 * sort character columns naturally in two_category_barplot()
