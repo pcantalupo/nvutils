@@ -188,7 +188,7 @@ two_category_barplot(mtcars,
 
 Arguments: `data` (data frame), `category` (x-axis column), `subcategory`
 (fill column), `title`, `legend_title`, `colors` (fill palette, defaults
-to the exported `colors_ditto`; pass any color vector, e.g. `colors_polychrome`), and `match` (`"position"` (default): the nth level in the plot gets the nth color; `"name"`: colors are assigned over the full subcategory level set, unused factor levels included, so a level keeps one color across runs and subsets).
+to the exported `colors_ditto`; pass any color vector, e.g. `colors_polychrome`), and `match` (`"position"` (default): the nth level in the plot gets the nth color, and a named `colors` vector is used as given and matched by level name; `"name"`: colors are assigned over the full subcategory level set, unused factor levels included, so a level keeps one color across runs and subsets).
 Returns a ggplot2 object.
 
 Character columns are ordered naturally, so `c2` comes before `c10`. A factor column keeps its level order. NA values in `subcategory` are drawn grey.

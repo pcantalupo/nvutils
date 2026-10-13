@@ -87,3 +87,13 @@ test_that("NA subcategory values are drawn grey50", {
   ld = ggplot2::layer_data(two_category_barplot(df, "sample", "celltype", match = "name"))
   expect_equal(ld$fill[order(ld$group)], c(colors_ditto[1:2], "grey50"))
 })
+
+test_that("match = 'position' uses a named palette as given", {
+  # Unused level "b", palette named over all 7 levels (nvutils#10)
+  df = data.frame(sample = "s1",
+                  celltype = factor(c("a", "c", "d", "e", "f", "g"),
+                                    levels = c("a", "b", "c", "d", "e", "f", "g")))
+  pal = setNames(colors_ditto[1:7], levels(df$celltype))
+  ld = ggplot2::layer_data(two_category_barplot(df, "sample", "celltype", colors = pal))
+  expect_equal(ld$fill[order(ld$group)], unname(pal[c("a", "c", "d", "e", "f", "g")]))
+})
